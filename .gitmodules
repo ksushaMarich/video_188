@@ -1,0 +1,3 @@
+[submodule "ApphudBase"]
+	path = ApphudBase
+	url = https://github.com/AezakmiFastApps/ApphudBase.git
