@@ -1,36 +1,31 @@
-//
-//  ContentView.swift
-//  VideoMaker
-//
-//  Created by Ксения Маричева on 01.04.2026.
-//
 
 import SwiftUI
 import StoreKit
+import ApphudSDK
+import ApphudBase
 
 struct ContentView: View {
-    @AppStorage("reviewAlertShown") private var reviewAlertShown = false
-    @AppStorage("onboardingCompleted") private var onboardingCompleted = false
-
+    @AppStorage("hasShownReviewAlert") private var hasShownReviewAlert = false
+    @AppStorage("isOnboardingFinished") private var isOnboardingFinished = false
     @EnvironmentObject private var purchaseManager: PurchaseManager
 
     var body: some View {
         Group {
-            OnboardingView()
-
+            if isOnboardingFinished {
+                Text("Test")
+            } else {
+                OnboardingView()
+            }
         }
-//        .animation(.easeInOut(duration: 0.3), value: purchaseManager.hasSeenOnBoarding)
-//        .fullScreenCover(isPresented: $purchaseManager.isShowedPaywall) {
-//            PaywallView(isTrialEnabled: false, product: purchaseManager.nonTrialProduct)
-//        }
-//        .onChange(of: purchaseManager.isOnboardingFinished) { newValue in
-//            if newValue && !onboardingCompleted {
-//                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-//                    requestAppStoreReview()
-//                    onboardingCompleted = true
-//                }
-//            }
-//        }
+        .animation(.easeInOut(duration: 0.3), value: purchaseManager.hasSeenOnBoarding)
+        .onChange(of: purchaseManager.hasSeenOnBoarding) {
+            if purchaseManager.hasSeenOnBoarding && !isOnboardingFinished {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                    requestAppStoreReview()
+                    isOnboardingFinished = true
+                }
+            }
+        }
     }
 
     private func requestAppStoreReview() {

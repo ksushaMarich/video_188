@@ -1,9 +1,3 @@
-//
-//  VideoMakerApp.swift
-//  VideoMaker
-//
-//  Created by Ксения Маричева on 01.04.2026.
-//
 
 import SwiftUI
 
@@ -11,9 +5,6 @@ import SwiftUI
 struct VideoMakerApp: App {
     
     @StateObject private var purchaseManager = PurchaseManager.shared
-    
-//    @StateObject private var coreDataManager = CoreDataManager.shared
-//    @StateObject private var generationLimitManager = GenerationLimitManager.shared
     @State private var isLoading = true
 
     var body: some Scene {
@@ -22,8 +13,6 @@ struct VideoMakerApp: App {
                 if !isLoading  {
                     ContentView()
                         .environmentObject(purchaseManager)
-//                        .environmentObject(coreDataManager)
-//                        .environmentObject(generationLimitManager)
                 } else {
                     LaunchScreen()
                 }
@@ -35,15 +24,6 @@ struct VideoMakerApp: App {
                     isLoading = false
                 }
             }
-            .onAppear {
-                for family in UIFont.familyNames {
-                    print(family)
-                    for name in UIFont.fontNames(forFamilyName: family) {
-                        print("  \(name)")
-                    }
-                }
-            }
-//            .environment(\.managedObjectContext, CoreDataManager.shared.context)
         }
     }
 }

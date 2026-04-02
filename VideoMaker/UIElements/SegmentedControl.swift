@@ -26,7 +26,7 @@ struct SegmentedControl: View {
         .padding(4)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(.fillTertiary))
+                .fill(Color.segmentedBackground.opacity(0.8)))
     }
 
     private func segment(
