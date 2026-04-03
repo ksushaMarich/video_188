@@ -17,9 +17,8 @@ struct ContentView: View {
             }
         }
         .animation(.easeInOut(duration: 0.3), value: purchaseManager.hasSeenOnBoarding)
-        .onChange(of: purchaseManager.hasSeenOnBoarding) {
-            if purchaseManager.hasSeenOnBoarding {
-                print("Запрос оценки")
+        .onChange(of: purchaseManager.hasSeenOnBoarding) { oldValue, newValue in
+            if newValue {
                 requestAppStoreReview()
             }
         }

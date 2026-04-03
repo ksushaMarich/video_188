@@ -54,26 +54,30 @@ struct OnboardingPaywallView: View {
     private var contentPanel: some View {
         VStack(alignment: .center, spacing: 24) {
             VStack(alignment: .center, spacing: 45) {
-                    VStack(spacing: 16) {
-                            Text("Full Power With\nPremium Features")
-                                .font(CabinetGroteskFont.extrabold.of(size: 40))
-                                .multilineTextAlignment(.center)
-                                .foregroundStyle(
-                                    LinearGradient(
-                                        colors: [
-                                            Color.introAccentSecondary,
-                                            Color.introAccentPrimary
-                                        ],
-                                        startPoint: .bottomLeading,
-                                        endPoint: .topTrailing
-                                    )
-                                )
-                                .fixedSize(horizontal: false, vertical: true)
-                        
+                VStack(spacing: 16) {
+                    Text("Full Power With\nPremium Features")
+                        .font(CabinetGroteskFont.extrabold.of(size: 40))
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [
+                                    Color.introAccentSecondary,
+                                    Color.introAccentPrimary
+                                ],
+                                startPoint: .bottomLeading,
+                                endPoint: .topTrailing
+                            )
+                        )
                         .fixedSize(horizontal: false, vertical: true)
-
-                        SegmentedControl(isTrial: $isTrialEnabled)
-                    }
+                        
+                    Text("Share, download, and create more\n with a premium subscription")
+                        .font(CabinetGroteskFont.medium.of(size: 20))
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(.introSubtitle)
+                        .fixedSize(horizontal: false, vertical: true)
+                    
+                    SegmentedControl(isTrial: $isTrialEnabled)
+                }
 
                 VStack(spacing: 24) {
                     subscriptionText()
@@ -127,14 +131,12 @@ struct OnboardingPaywallView: View {
 
     private func startPurchase() {
         isLoading = true
-        print("Покупка начата")
         purchaseManager.makePurchase(
             product: isTrialEnabled
                 ? purchaseManager.trialProduct
                 : purchaseManager.nonTrialProduct)
         { success in
             isLoading = false
-            print("Покупка совершена \(success)")
             purchaseManager.hasSeenOnBoarding = success
         }
     }
