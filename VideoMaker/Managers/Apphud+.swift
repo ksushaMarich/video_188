@@ -21,13 +21,6 @@ extension ApphudProduct {
             }
         }
     }
-    
-    var trialPeriodText: String? {
-        guard case let .freeTrial(period)? = introductory else {
-            return nil
-        }
-        return period.format(omitOneUnit: false)
-    }
 
     var fullPrice: String {
         var price = localizedPrice

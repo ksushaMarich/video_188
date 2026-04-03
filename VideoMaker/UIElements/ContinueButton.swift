@@ -2,8 +2,8 @@
 import SwiftUI
 
 struct ContinueButton: View {
+    @Binding var isDisabled: Bool
     let action: () -> Void
-    var isDisabled: Bool = true
 
     var body: some View {
         Button(action: action) {
@@ -18,6 +18,6 @@ struct ContinueButton: View {
                 )
                 .contentShape(RoundedRectangle(cornerRadius: 8))
         }
-//        .disabled(isDisabled)
+        .disabled(isDisabled)
     }
 }

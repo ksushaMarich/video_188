@@ -6,12 +6,11 @@ import ApphudBase
 
 struct ContentView: View {
     @AppStorage("hasShownReviewAlert") private var hasShownReviewAlert = false
-    @AppStorage("isOnboardingFinished") private var isOnboardingFinished = false
     @EnvironmentObject private var purchaseManager: PurchaseManager
 
     var body: some View {
         Group {
-            if isOnboardingFinished {
+            if purchaseManager.hasSeenOnBoarding {
                 Text("Test")
             } else {
                 OnboardingView()
@@ -19,11 +18,9 @@ struct ContentView: View {
         }
         .animation(.easeInOut(duration: 0.3), value: purchaseManager.hasSeenOnBoarding)
         .onChange(of: purchaseManager.hasSeenOnBoarding) {
-            if purchaseManager.hasSeenOnBoarding && !isOnboardingFinished {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                    requestAppStoreReview()
-                    isOnboardingFinished = true
-                }
+            if purchaseManager.hasSeenOnBoarding {
+                print("Запрос оценки")
+                requestAppStoreReview()
             }
         }
     }

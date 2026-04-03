@@ -30,10 +30,7 @@ struct TermsPrivacyRestoreFooter: View {
     }
     
     private func openURL(string: String) {
-        guard let url =
-            URL(
-                string: string)
-        else { return }
+        guard let url = URL(string: string) else { return }
         openURL(url)
     }
 }

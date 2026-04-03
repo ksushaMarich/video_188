@@ -15,7 +15,6 @@ final class PurchaseManager: ObservableObject {
     @Published private(set) var isSubscribed = false
     @Published private(set) var products: [ApphudProduct]!
     @Published var isShowedPaywall = false
-    @Published var showPaywall = false
 
     static let shared = PurchaseManager()
 

@@ -21,10 +21,9 @@ struct OnboardingPaywallView: View {
             contentPanel
         }
         .disabled(isLoading)
+        .ignoresSafeArea()
         .background {
-            Color.bgPrimary
-                .ignoresSafeArea()
-                .overlay(backgroundImage)
+            backgroundImage
         }
         .onAppear {
             Apphud.paywallShown(prod)
@@ -38,7 +37,7 @@ struct OnboardingPaywallView: View {
                     Color.black.opacity(0.6)
                         .ignoresSafeArea()
                     
-                    LottieView(filename: "bolt", loopMode: .loop)
+                    LottieView(animationName: "bolt", loopMode: .loop)
                         .frame(width: 100, height: 100)
                 }
             }
@@ -55,9 +54,7 @@ struct OnboardingPaywallView: View {
     private var contentPanel: some View {
         VStack(alignment: .center, spacing: 24) {
             VStack(alignment: .center, spacing: 45) {
-                VStack(spacing: 24) {
                     VStack(spacing: 16) {
-                        HStack(spacing: 0) {
                             Text("Full Power With\nPremium Features")
                                 .font(CabinetGroteskFont.extrabold.of(size: 40))
                                 .multilineTextAlignment(.center)
@@ -72,24 +69,23 @@ struct OnboardingPaywallView: View {
                                     )
                                 )
                                 .fixedSize(horizontal: false, vertical: true)
-                        }
                         
                         .fixedSize(horizontal: false, vertical: true)
 
                         SegmentedControl(isTrial: $isTrialEnabled)
                     }
-                }
 
                 VStack(spacing: 24) {
                     subscriptionText()
                     
-                    ContinueButton(action: {
+                    ContinueButton(isDisabled: $isLoading) {
                         startPurchase()
-                    }, isDisabled: isLoading)
+                    }
                 }
             }
 
-            TermsPrivacyRestoreFooter{
+            TermsPrivacyRestoreFooter {
+                print("Кнопка нажата")
                 isLoading = true
 
                 purchaseManager.restorePurchase { success in
@@ -112,14 +108,12 @@ struct OnboardingPaywallView: View {
 
         VStack(alignment: .leading, spacing: 4) {
             Text("Subscribe to unlock all the features\nfor just \(price)")
-                
                 .foregroundColor(.textPrimary)
 
             Button {
                 purchaseManager.hasSeenOnBoarding = true
             } label: {
                 Text("or proceed with limits")
-                    
                     .foregroundColor(.textSecondary)
                     .contentShape(Rectangle())
             }
@@ -133,13 +127,14 @@ struct OnboardingPaywallView: View {
 
     private func startPurchase() {
         isLoading = true
-
+        print("Покупка начата")
         purchaseManager.makePurchase(
             product: isTrialEnabled
                 ? purchaseManager.trialProduct
                 : purchaseManager.nonTrialProduct)
         { success in
             isLoading = false
+            print("Покупка совершена \(success)")
             purchaseManager.hasSeenOnBoarding = success
         }
     }

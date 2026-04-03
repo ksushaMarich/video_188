@@ -1,13 +1,18 @@
 import SwiftUI
+import Lottie
 
 struct OnboardingView: View {
     @EnvironmentObject private var purchaseManager: PurchaseManager
     @Environment(\.openURL) private var openURL
     @State private var currentStep: AppIntroStep = .first
+    @State private var isLoading = false
 
     var body: some View {
-        ZStack {
-            switch currentStep {
+        if currentStep == .paywall {
+            OnboardingPaywallView()
+        } else {
+            ZStack {
+                switch currentStep {
                 case .first:
                     Image(.onboardingFirst)
                         .resizable()
@@ -21,22 +26,16 @@ struct OnboardingView: View {
                         .resizable()
                         .ignoresSafeArea()
                 case .paywall:
-                    Image(.paywall)
-                        .resizable()
-                        .ignoresSafeArea()
-            }
-            
-            VStack(spacing: 0) {
-                Spacer()
-
-                if currentStep == .paywall {
-                    OnboardingPaywallView()
-                } else {
+                    Color.black
+                }
+                
+                VStack(spacing: 0) {
+                    Spacer()
                     VStack(spacing: 24) {
                         VStack(spacing: 32) {
                             infoContainer
                             
-                            ContinueButton {
+                            ContinueButton(isDisabled: $isLoading) {
                                 let allStates = AppIntroStep.allCases
                                 let currentIndex = allStates.firstIndex(of: currentStep) ?? 0
                                 
@@ -46,8 +45,10 @@ struct OnboardingView: View {
                             }
                         }
                         
-                        TermsPrivacyRestoreFooter{
+                        TermsPrivacyRestoreFooter {
+                            isLoading = true
                             purchaseManager.restorePurchase { success in
+                                isLoading = false
                                 if success {
                                     purchaseManager.hasSeenOnBoarding = true
                                 }
@@ -58,8 +59,20 @@ struct OnboardingView: View {
                     .padding(.bottom, 34)
                 }
             }
+            .disabled(isLoading)
+            .ignoresSafeArea()
+            .overlay {
+                if isLoading {
+                    ZStack {
+                        Color.black.opacity(0.6)
+                            .ignoresSafeArea()
+                        
+                        LottieView(animationName: "bolt", loopMode: .loop)
+                            .frame(width: 100, height: 100)
+                    }
+                }
+            }
         }
-        .ignoresSafeArea()
     }
 
     
