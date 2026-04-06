@@ -8,9 +8,14 @@ struct SettingsView: View {
         VStack(spacing: 24) {
             premiumCard
             content
+            Spacer()
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 16)
+        .background(
+            Color.mainBackground
+                .ignoresSafeArea()
+        )
     }
 
     private var content: some View {
