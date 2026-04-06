@@ -8,6 +8,7 @@ enum CabinetGroteskFont: String {
     case bold = "CabinetGrotesk-Bold"
     case medium = "CabinetGrotesk-Medium"
     case extrabold = "CabinetGrotesk-Extrabold"
+    case regular = "CabinetGrotesk-Regular"
     
     func of(size: CGFloat) -> Font {
         Font.custom(self.rawValue, size: size)

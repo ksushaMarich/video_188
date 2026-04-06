@@ -11,12 +11,15 @@ struct ContentView: View {
     var body: some View {
         Group {
             if purchaseManager.hasSeenOnBoarding {
-                Text("Test")
+                MainTabView()
             } else {
                 OnboardingView()
             }
         }
         .animation(.easeInOut(duration: 0.3), value: purchaseManager.hasSeenOnBoarding)
+        .fullScreenCover(isPresented: $purchaseManager.isShowedPaywall) {
+            PaywallView()
+        }
         .onChange(of: purchaseManager.hasSeenOnBoarding) { oldValue, newValue in
             if newValue {
                 requestAppStoreReview()

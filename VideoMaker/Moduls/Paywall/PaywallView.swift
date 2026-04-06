@@ -3,8 +3,9 @@ import SwiftUI
 import Lottie
 import ApphudBase
 
-struct OnboardingPaywallView: View {
+struct PaywallView: View {
     @EnvironmentObject private var purchaseManager: PurchaseManager
+    @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
     @State private var isTrialEnabled = false
     @State private var isLoading = false
@@ -53,8 +54,7 @@ struct OnboardingPaywallView: View {
     @ViewBuilder
     private var contentPanel: some View {
         VStack(alignment: .center, spacing: 24) {
-            VStack(alignment: .center, spacing: 45) {
-                VStack(spacing: 16) {
+                VStack(spacing: 12) {
                     Text("Full Power With\nPremium Features")
                         .font(CabinetGroteskFont.extrabold.of(size: 40))
                         .multilineTextAlignment(.center)
@@ -76,24 +76,28 @@ struct OnboardingPaywallView: View {
                         .foregroundStyle(.introSubtitle)
                         .fixedSize(horizontal: false, vertical: true)
                     
-                    SegmentedControl(isTrial: $isTrialEnabled)
+                    
                 }
-
-                VStack(spacing: 24) {
+            
+                SegmentedControl(isTrial: $isTrialEnabled)
+            
+                VStack(spacing: 32) {
                     subscriptionText()
                     
                     ContinueButton(isDisabled: $isLoading) {
                         startPurchase()
                     }
-                }
             }
 
             TermsPrivacyRestoreFooter {
                 isLoading = true
-
+                
                 purchaseManager.restorePurchase { success in
-                    isLoading = false
-                    purchaseManager.hasSeenOnBoarding = success
+                    if success {
+                        DispatchQueue.main.async {
+                            dismiss()
+                        }
+                    }
                 }
             }
         }
@@ -105,25 +109,23 @@ struct OnboardingPaywallView: View {
 
     @ViewBuilder
     private func subscriptionText() -> some View {
-        let price = isTrialEnabled
-            ? purchaseManager.trialProduct.fullPrice
-            : purchaseManager.nonTrialProduct.fullPrice
 
-        VStack(alignment: .leading, spacing: 4) {
-            Text("Subscribe to unlock all the features\nfor just \(price)")
-                .foregroundColor(.textPrimary)
-
+        VStack(alignment: .center, spacing: 4) {
+            Text(isTrialEnabled ? "Subscribe to unlock all the features\nfor just \(purchaseManager.trialProduct.fullPrice)" : "Subscribe to unlock all the\nfeatures for just \(purchaseManager.nonTrialProduct.fullPrice)")
+                .foregroundColor(.introSubtitle)
+                .font(CabinetGroteskFont.regular.of(size: 17))
             Button {
-                purchaseManager.hasSeenOnBoarding = true
+                DispatchQueue.main.async {
+                    dismiss()
+                }
             } label: {
                 Text("or proceed with limits")
-                    .foregroundColor(.textSecondary)
-                    .contentShape(Rectangle())
+                    .foregroundColor(.introSubtitle)
+                    .font(CabinetGroteskFont.regular.of(size: 17))
             }
             .disabled(isLoading)
         }
-        .multilineTextAlignment(.leading)
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .multilineTextAlignment(.center)
         .fixedSize(horizontal: false, vertical: true)
     }
 
@@ -132,16 +134,15 @@ struct OnboardingPaywallView: View {
         isLoading = true
         purchaseManager.makePurchase(
             product: isTrialEnabled
-                ? purchaseManager.trialProduct
-                : purchaseManager.nonTrialProduct)
+            ? purchaseManager.trialProduct
+            : purchaseManager.nonTrialProduct)
         { success in
             isLoading = false
-            purchaseManager.hasSeenOnBoarding = success
+            if success {
+                DispatchQueue.main.async {
+                    dismiss()
+                }
+            }
         }
     }
-}
-
-#Preview {
-    OnboardingPaywallView()
-        .environmentObject(PurchaseManager.shared)
 }
