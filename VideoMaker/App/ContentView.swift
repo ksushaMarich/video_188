@@ -18,7 +18,7 @@ struct ContentView: View {
         }
         .animation(.easeInOut(duration: 0.3), value: purchaseManager.hasSeenOnBoarding)
         .fullScreenCover(isPresented: $purchaseManager.isShowedPaywall) {
-            PaywallView(type: .paywall)
+            PaywallView()
         }
         .onChange(of: purchaseManager.hasSeenOnBoarding) { oldValue, newValue in
             if newValue {

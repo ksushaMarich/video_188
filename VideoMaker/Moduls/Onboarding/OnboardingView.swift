@@ -9,7 +9,7 @@ struct OnboardingView: View {
 
     var body: some View {
         if currentStep == .paywall {
-            PaywallView(type: .onboarding)
+            OnboardingPaywallView()
         } else {
             ZStack {
                 switch currentStep {

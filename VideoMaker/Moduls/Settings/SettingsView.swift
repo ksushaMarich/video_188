@@ -5,15 +5,12 @@ struct SettingsView: View {
     @EnvironmentObject var purchaseManager: PurchaseManager
 
     var body: some View {
-        Color.mainBackground
-            .overlay(alignment: .top) {
-                VStack(spacing: 24) {
-                    premiumCard
-                    content
-                }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 16)
-            }
+        VStack(spacing: 24) {
+            premiumCard
+            content
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 16)
     }
 
     private var content: some View {
@@ -25,28 +22,28 @@ struct SettingsView: View {
                     Text(SettingsItem.support.title)
                         .font(CabinetGroteskFont.bold.of(size: 16))
                         .foregroundColor(.mainBackground)
-                        .padding(.horizontal, 16)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(.introAccentSecondary)
+                            )
+                        .contentShape(RoundedRectangle(cornerRadius: 8))
                 }
-                .frame(maxWidth: .infinity)
-                .frame(height: 48)
-                .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(.introAccentSecondary)
-                )
                 Button {
                     viewModel.handleItemTap(SettingsItem.shareApp)
                 } label: {
                     Text(SettingsItem.shareApp.title)
                         .font(CabinetGroteskFont.bold.of(size: 16))
                         .foregroundColor(.introSubtitle)
-                        .padding(.horizontal, 16)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(.introAccentSecondary.opacity(0.2))
+                            )
+                        .contentShape(RoundedRectangle(cornerRadius: 8))
                 }
-                .frame(maxWidth: .infinity)
-                .frame(height: 48)
-                .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(.introAccentSecondary.opacity(0.2))
-                )
             }
 
             HStack(spacing: 0) {
@@ -57,7 +54,9 @@ struct SettingsView: View {
                         .foregroundColor(Color.introSubtitle)
                         .font(CabinetGroteskFont.medium.of(size: 14))
                         .frame(maxWidth: .infinity)
+                        .padding(.vertical, 10)
                         .multilineTextAlignment(.center)
+                        .contentShape(Rectangle())
                 }
                 
                 Button {
@@ -66,12 +65,12 @@ struct SettingsView: View {
                     Text(SettingsItem.privacyPolicy.title)
                         .foregroundColor(Color.introSubtitle)
                         .font(CabinetGroteskFont.medium.of(size: 14))
-                        .multilineTextAlignment(.center)
                         .frame(maxWidth: .infinity)
+                        .padding(.vertical, 10)
+                        .multilineTextAlignment(.center)
+                        .contentShape(Rectangle())
                 }
             }
-            .frame(maxWidth: .infinity)
-            .frame(height: 44)
         }
     }
 

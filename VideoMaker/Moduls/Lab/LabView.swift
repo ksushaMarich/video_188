@@ -46,6 +46,7 @@ struct LabView: View {
                 .background(
                     RoundedRectangle(cornerRadius: 8)
                         .fill(.introAccentSecondary))
+                .contentShape(RoundedRectangle(cornerRadius: 8))
             }
         }
         .padding(.horizontal, 24)

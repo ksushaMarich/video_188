@@ -9,7 +9,6 @@ struct PaywallView: View {
     @Environment(\.openURL) private var openURL
     @State private var isTrialEnabled = false
     @State private var isLoading = false
-    let type: PaywallType
     
     var prod: ApphudProduct {
         let prod = isTrialEnabled ? purchaseManager.trialProduct : purchaseManager.nonTrialProduct
@@ -55,7 +54,6 @@ struct PaywallView: View {
     @ViewBuilder
     private var contentPanel: some View {
         VStack(alignment: .center, spacing: 24) {
-//            VStack(alignment: .center, spacing: 45) {
                 VStack(spacing: 12) {
                     Text("Full Power With\nPremium Features")
                         .font(CabinetGroteskFont.extrabold.of(size: 40))
@@ -89,22 +87,15 @@ struct PaywallView: View {
                     ContinueButton(isDisabled: $isLoading) {
                         startPurchase()
                     }
-//                }
             }
 
             TermsPrivacyRestoreFooter {
                 isLoading = true
                 
                 purchaseManager.restorePurchase { success in
-                    switch type {
-                    case .onboarding:
-                        isLoading = false
-                        purchaseManager.hasSeenOnBoarding = success
-                    case .paywall:
-                        if success {
-                            DispatchQueue.main.async {
-                                dismiss()
-                            }
+                    if success {
+                        DispatchQueue.main.async {
+                            dismiss()
                         }
                     }
                 }
@@ -123,17 +114,9 @@ struct PaywallView: View {
             Text(isTrialEnabled ? "Subscribe to unlock all the features\nfor just \(purchaseManager.trialProduct.fullPrice)" : "Subscribe to unlock all the\nfeatures for just \(purchaseManager.nonTrialProduct.fullPrice)")
                 .foregroundColor(.introSubtitle)
                 .font(CabinetGroteskFont.regular.of(size: 17))
-
             Button {
-                switch type {
-                case .onboarding:
-                    isLoading = false
-                    purchaseManager.hasSeenOnBoarding = true
-                case .paywall:
-                    DispatchQueue.main.async {
-                        dismiss()
-                    }
-                    
+                DispatchQueue.main.async {
+                    dismiss()
                 }
             } label: {
                 Text("or proceed with limits")
@@ -151,19 +134,13 @@ struct PaywallView: View {
         isLoading = true
         purchaseManager.makePurchase(
             product: isTrialEnabled
-                ? purchaseManager.trialProduct
-                : purchaseManager.nonTrialProduct)
+            ? purchaseManager.trialProduct
+            : purchaseManager.nonTrialProduct)
         { success in
-            switch type {
-            case .onboarding:
-                isLoading = false
-                purchaseManager.hasSeenOnBoarding = success
-            case .paywall:
-                isLoading = false
-                if success {
-                    DispatchQueue.main.async {
-                        dismiss()
-                    }
+            isLoading = false
+            if success {
+                DispatchQueue.main.async {
+                    dismiss()
                 }
             }
         }

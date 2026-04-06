@@ -89,7 +89,6 @@ struct OnboardingPaywallView: View {
             }
 
             TermsPrivacyRestoreFooter {
-                print("Кнопка нажата")
                 isLoading = true
 
                 purchaseManager.restorePurchase { success in
