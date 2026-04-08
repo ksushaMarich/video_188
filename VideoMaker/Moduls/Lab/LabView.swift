@@ -4,14 +4,70 @@ import SwiftUI
 struct LabView: View {
     @StateObject private var viewModel = LabViewModel()
     @EnvironmentObject private var mainViewModel: MainTabViewModel
-    
+    @State private var selectedVideo: LibraryItem?
+    @State private var headerHeight: CGFloat = 0
+
     var body: some View {
-        Color.mainBackground.ignoresSafeArea()
-            .overlay {
-                if viewModel.items.isEmpty {
-                    emptyView
+        ZStack {
+            if viewModel.items.isEmpty {
+                emptyView
+            } else {
+                content
+            }
+            VStack(spacing: 0) {
+                Text("Your Creations")
+                    .foregroundColor(.textPrimary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, 11)
+                    .padding(.bottom, 21)
+                    .background(
+                        BlurView(effect: .dark, intensity: 0.24)
+                            .ignoresSafeArea()
+                            .background(.mainBackground.opacity(0.8))
+                    )
+                    .background(
+                        GeometryReader { geo in
+                            Color.clear
+                                .onAppear {
+                                    headerHeight = geo.size.height
+                                }
+                        }
+                    )
+                Spacer()
+            }
+        }
+        .background(Color.mainBackground.ignoresSafeArea())
+        .navigationDestination(item: $selectedVideo) { video in
+            Group {
+                if video.videoURL != nil {
+                    GenerationView(libraryItem: video)
                 }
             }
+        }
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        ScrollView(.vertical, showsIndicators: false) {
+            libraryItemsList
+        }
+    }
+
+    private var libraryItemsList: some View {
+        let columns = [
+            GridItem(.flexible(), spacing: 16),
+            GridItem(.flexible(), spacing: 16)
+        ]
+
+        return LazyVGrid(columns: columns, spacing: 16) {
+            ForEach(viewModel.items) { item in
+                LabVideoCard(preset: item) {
+                    selectedVideo = item
+                }
+            }
+        }
+        .padding(.top, headerHeight + 16)
+        .padding(.horizontal, 16)
     }
     
     private var emptyView: some View {

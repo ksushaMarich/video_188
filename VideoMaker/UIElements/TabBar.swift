@@ -25,6 +25,11 @@ struct TabBar: View {
         }
         .padding(.vertical, 8)
         .frame(maxWidth: .infinity)
+        .background(content: {
+            BlurView(effect: .dark, intensity: 0.24)
+                .ignoresSafeArea()
+                .background(.mainBackground.opacity(0.8))
+        })
     }
     
     @ViewBuilder

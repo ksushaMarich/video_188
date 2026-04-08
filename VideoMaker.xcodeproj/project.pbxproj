@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		168BB6BB2F83AC17004F25E4 /* ApphudBase in Frameworks */ = {isa = PBXBuildFile; productRef = 168BB6BA2F83AC17004F25E4 /* ApphudBase */; };
+		168BB6BE2F83AC6D004F25E4 /* ObfuscateMacro in Frameworks */ = {isa = PBXBuildFile; productRef = 168BB6BD2F83AC6D004F25E4 /* ObfuscateMacro */; };
 		16BC439A2F7D439A00984509 /* ApphudBase in Frameworks */ = {isa = PBXBuildFile; productRef = 16BC43992F7D439A00984509 /* ApphudBase */; };
 		16C768772F7E80CA0030DFFD /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 16C768762F7E80CA0030DFFD /* Lottie */; };
 		16C76D0E2F804B5A0030DFFD /* ApphudBase in Frameworks */ = {isa = PBXBuildFile; productRef = 16C76D0D2F804B5A0030DFFD /* ApphudBase */; };
@@ -48,7 +50,9 @@
 			files = (
 				92D304EE18533FEB668C6D94 /* Pods_VideoMaker.framework in Frameworks */,
 				16BC439A2F7D439A00984509 /* ApphudBase in Frameworks */,
+				168BB6BB2F83AC17004F25E4 /* ApphudBase in Frameworks */,
 				16C768772F7E80CA0030DFFD /* Lottie in Frameworks */,
+				168BB6BE2F83AC6D004F25E4 /* ObfuscateMacro in Frameworks */,
 				16C76D0E2F804B5A0030DFFD /* ApphudBase in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -141,7 +145,8 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				16C768752F7E80CA0030DFFD /* XCRemoteSwiftPackageReference "lottie-ios" */,
-				16C76D0C2F804B5A0030DFFD /* XCLocalSwiftPackageReference "ApphudBase" */,
+				168BB6B92F83AC17004F25E4 /* XCLocalSwiftPackageReference "ApphudBase" */,
+				168BB6BC2F83AC6D004F25E4 /* XCLocalSwiftPackageReference "ObfuscateMacro" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 16BC43572F7D423A00984509 /* Products */;
@@ -339,6 +344,7 @@
 				INFOPLIST_FILE = VideoMaker/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "";
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Allowing access lets you use photos as the first frame for video generation and save finished videos to your Camera Roll";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -380,6 +386,7 @@
 				INFOPLIST_FILE = VideoMaker/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "";
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Allowing access lets you use photos as the first frame for video generation and save finished videos to your Camera Roll";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -430,9 +437,13 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		16C76D0C2F804B5A0030DFFD /* XCLocalSwiftPackageReference "ApphudBase" */ = {
+		168BB6B92F83AC17004F25E4 /* XCLocalSwiftPackageReference "ApphudBase" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ApphudBase;
+		};
+		168BB6BC2F83AC6D004F25E4 /* XCLocalSwiftPackageReference "ObfuscateMacro" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ObfuscateMacro;
 		};
 /* End XCLocalSwiftPackageReference section */
 
@@ -448,6 +459,14 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		168BB6BA2F83AC17004F25E4 /* ApphudBase */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ApphudBase;
+		};
+		168BB6BD2F83AC6D004F25E4 /* ObfuscateMacro */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ObfuscateMacro;
+		};
 		16BC43992F7D439A00984509 /* ApphudBase */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = ApphudBase;
