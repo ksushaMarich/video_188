@@ -28,7 +28,7 @@ struct MainTabView: View {
     private func tabContent(for tab: TabItem) -> some View {
         switch tab {
         case .main:
-            MainView()
+            VideoCreationView()
         case .lab:
             LabView()
                 .environmentObject(viewModel)

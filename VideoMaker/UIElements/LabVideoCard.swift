@@ -21,12 +21,10 @@ struct LabVideoCard: View {
                 }
             }
             .frame(maxWidth: .infinity)
-            .contentShape(RoundedRectangle(cornerRadius: 8))
             .aspectRatio(ratio, contentMode: .fill)
             .clipped()
             .clipShape(RoundedRectangle(cornerRadius: 8))
+            .contentShape(RoundedRectangle(cornerRadius: 8))
         }
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-        .buttonStyle(.plain)
     }
 }

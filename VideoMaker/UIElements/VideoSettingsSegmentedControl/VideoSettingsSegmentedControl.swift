@@ -42,7 +42,9 @@ struct VideoSettingsSegmentedControl<T>: View where T: CaseIterable & Identifiab
         selected: Bool,
         action: @escaping () -> Void
     ) -> some View {
-        Button(action: action) {
+        Button {
+            action()
+        } label: {
             Text(title)
                 .font(CabinetGroteskFont.medium.of(size: 15))
                 .foregroundColor(.introSubtitle)
@@ -56,8 +58,8 @@ struct VideoSettingsSegmentedControl<T>: View where T: CaseIterable & Identifiab
                         }
                     }
                 )
+                .contentShape(RoundedRectangle(cornerRadius: 8))
         }
-        .buttonStyle(.plain)
     }
 
     private func title(for item: T) -> String {

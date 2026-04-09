@@ -8,6 +8,13 @@ struct GenerationVideoPlayer: View {
     @State private var duration: Double = 1
     @State private var videoSize: CGSize?
     @State private var videoSizeHeight: CGFloat = 200
+    
+    struct VideoHeightKey: PreferenceKey {
+        static var defaultValue: CGFloat = 200
+        static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+            value = nextValue()
+        }
+    }
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -58,21 +65,5 @@ struct GenerationVideoPlayer: View {
         let minutes = totalSeconds / 60
         let seconds = totalSeconds % 60
         return String(format: "%d:%02d", minutes, seconds)
-    }
-
-    private struct InnerPlayer: UIViewRepresentable {
-        let videoURL: URL
-        var onVideoSize: (CGSize) -> Void
-        var onProgress: (Double, Double) -> Void
-
-        func makeUIView(context: Context) -> GenerationVideoPlayerUIView {
-            let view = GenerationVideoPlayerUIView()
-            view.onVideoSize = onVideoSize
-            view.onProgress = onProgress
-            view.configure(url: videoURL)
-            return view
-        }
-
-        func updateUIView(_ uiView: GenerationVideoPlayerUIView, context: Context) {}
     }
 }

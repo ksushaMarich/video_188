@@ -1,5 +1,5 @@
 import AVFoundation
-import CoreData
+internal import CoreData
 import Foundation
 import UIKit
 import Combine
@@ -23,7 +23,7 @@ final class GenerationViewModel: ObservableObject {
         generatedVideoURL = libraryItem.videoURL
         selectedTemplate = libraryItem.selectedTemplate
         let limit = libraryItem.selectedTemplate
-            .map { max(0, maxPromptLength - $0.presetPrompt.count - connectorLength) } ?? maxPromptLength
+            .map { _ in max(0, maxPromptLength /*- $0.presetPrompt.count*/ - connectorLength) } ?? maxPromptLength
         prompt = String(libraryItem.text.prefix(limit))
         selectedImage = libraryItem.sourceImage
         duration = Duration(raw: libraryItem.duration)

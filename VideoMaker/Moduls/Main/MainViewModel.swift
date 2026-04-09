@@ -1,162 +1,89 @@
-import Combine
-import AVFoundation
+
 import Foundation
-import UIKit
+import Combine
+internal import CoreData
+import SwiftUI
 
 final class MainViewModel: ObservableObject {
-    @Published var selectedImage: UIImage?
-    @Published var isValidatingImage = false
-    @Published var promt = ""
-    @Published var generationMode: GenerationMode = .imageToVideo
-    @Published var progressState: GenerationState? {
-        didSet {
-            if progressState != nil {
-                isGeneration = true
-            } else {
-                isGeneration = false
-            }
-        }
-    }
-    @Published var generatedVideoURL: URL?
-    @Published var generatedVideoData: Data?
-    @Published var generatedVideo: LibraryItem? = nil
-    @Published var isGeneration: Bool = false
-    @Published var isImageToVideo: Bool = true {
-        didSet {
-            generationMode = isImageToVideo ? .imageToVideo : .textToVideo
-        }
-    }
-    @Published var quality: Quality = ._768 {
-        didSet {
-            if quality == ._1080 && duration == ._10 {
-                duration = ._6
-            }
-        }
-    }
-    @Published var duration: Duration = ._6 {
-        didSet {
-            if duration == ._10 && quality == ._1080 {
-                quality = ._768
-            }
-        }
-    }
     
-    var price: Int {
-        quality == ._1080 || duration == ._10 ? 3 : 1
-    }
+    @Published var isLoaded: Bool = false
+    @Published var results: [LibraryItem] = []
 
-    func generate() {
-        progressState = .preparing
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
-            guard self?.progressState == .preparing else { return }
-            self?.progressState = .inQueue
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [weak self] in
-            guard self?.progressState == .inQueue else { return }
-            self?.progressState = .generation
-        }
-        switch generationMode {
-        case .textToVideo:
-            MiniMaxApiService.shared.generateVideoFromText(
-                prompt: promt,
-                quality: quality,
-                duration: duration)
-            { [weak self] result in
-                DispatchQueue.main.async {
-                    self?.handleGenerationResult(result)
-                }
-            }
-        case .imageToVideo:
-            guard let image = selectedImage else { return }
-            MiniMaxApiService.shared.generateVideoFromImage(
-                image: image,
-                prompt: promt,
-                quality: quality,
-                duration: duration)
-            { [weak self] result in
-                DispatchQueue.main.async {
-                    self?.handleGenerationResult(result)
-                }
-            }
-        }
-    }
+    private var deletePartDismissWorkItem: DispatchWorkItem?
+    private var latestImagesTask: Task<Void, Never>?
     
-    var canGenerate: Bool {
-        let hasPrompt = !promt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        let imageOk = generationMode == .textToVideo || selectedImage != nil
-        return hasPrompt && imageOk && GenerationLimitManager.shared.canAfford(price: price)
-    }
-    
-    @MainActor
-    private func handleGenerationResult(_ result: Result<Data, Error>) {
-        switch result {
-            case let .success(data):
-            finishWithVideoData(data)
-            case .failure:
-            progressState = .fail
-        }
-    }
-    
-    private func finishWithVideoData(_ data: Data) {
-        generatedVideoData = data
-        let fileName = "generated_\(UUID().uuidString).mp4"
-        guard let permanentURL = getPermanentVideoURL(fileName: fileName) else {
-            progressState = .fail
-            return
-        }
+    func fetchCD(context: NSManagedObjectContext) {
+        let fetchRequestResults: NSFetchRequest<GeneratedVideo> = GeneratedVideo.fetchRequest()
+        
+        fetchRequestResults.sortDescriptors = [NSSortDescriptor(key: "createdAt", ascending: false)]
+        
         do {
-            try data.write(to: permanentURL)
-            generatedVideoURL = permanentURL
-//            resultPlayer = AVPlayer(url: permanentURL)
-//            setupResultPlayerObserver()
+            let generatedResults = try context.fetch(fetchRequestResults)
+            results = generatedResults.map{
+                guard let url = resolvedVideoURL(for: $0, context: context) else { return LibraryItem(from: $0) }
+                return LibraryItem(from: $0, resolvedVideoURL: url)
+            }
+            isLoaded = true
         } catch {
-            progressState = .fail
-            return
-        }
-        moveToResult()
-    }
-    
-    func moveToResult() {
-        progressState = nil
-        saveVideoToCoreData()
-    }
-    
-    private func saveVideoToCoreData() {
-        guard let videoURL = generatedVideoURL else { return }
-
-        CoreDataManager.shared.generateThumbnail(from: videoURL) { [weak self] thumbnailImage in
-            guard let self = self else { return }
-
-            generatedVideo = CoreDataManager.shared.saveGeneratedVideo(
-                videoURL: videoURL,
-                prompt: self.promt,
-                duration: self.duration.rawValue,
-                quality: self.quality.rawValue,
-                generationMode: self.generationMode.rawValue,
-                selectedTemplateId: nil,
-                thumbnailImage: thumbnailImage,
-                sourceImage: self.generationMode == .imageToVideo ? self.selectedImage : nil)
+            print("Error CoreData: \(error)")
         }
     }
     
-    private func getPermanentVideoURL(fileName: String) -> URL? {
+    func create(
+        context: NSManagedObjectContext,
+        videoURL: URL,
+        prompt: String,
+        duration: String,
+        quality: String,
+        generationMode: String,
+        selectedTemplateId: String? = nil,
+        thumbnailImage: UIImage? = nil,
+        sourceImage: UIImage? = nil
+    ) -> LibraryItem? {
+        let generatedVideo = GeneratedVideo(context: context)
+        generatedVideo.id = UUID()
+        generatedVideo.videoURL = videoURL
+        generatedVideo.prompt = prompt
+        generatedVideo.duration = duration
+        generatedVideo.quality = quality
+        generatedVideo.generationMode = generationMode
+        generatedVideo.selectedTemplateId = selectedTemplateId
+        generatedVideo.createdAt = Date()
+        
+        guard context.hasChanges else { return nil}
+        do {
+            try context.save()
+        } catch {
+            print("Error saving context: \(error.localizedDescription)")
+        }
+        
+        fetchCD(context: context)
+        return LibraryItem(from: generatedVideo)
+    }
+    
+    func resolvedVideoURL(for video: GeneratedVideo, context: NSManagedObjectContext) -> URL? {
+        guard let storedURL = video.videoURL else { return nil }
+        if FileManager.default.fileExists(atPath: storedURL.path) {
+            return storedURL
+        }
         guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
         else {
             return nil
         }
-
-        let videosDirectory = documentsDirectory.appendingPathComponent("GeneratedVideos")
-
-        do {
-            try FileManager.default.createDirectory(
-                at: videosDirectory,
-                withIntermediateDirectories: true,
-                attributes: nil)
-        } catch {
-            print("Error creating videos directory: \(error)")
-            return nil
+        let fallbackURL = documentsDirectory
+            .appendingPathComponent("GeneratedVideos")
+            .appendingPathComponent(storedURL.lastPathComponent)
+        if FileManager.default.fileExists(atPath: fallbackURL.path) {
+            video.videoURL = fallbackURL
+            do {
+                try context.save()
+            } catch {
+                print("Error saving context: \(error.localizedDescription)")
+            }
+            return fallbackURL
         }
-
-        return videosDirectory.appendingPathComponent(fileName)
+        return nil
     }
 }
+
+

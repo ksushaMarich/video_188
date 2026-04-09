@@ -122,6 +122,7 @@ struct PaywallView: View {
                 Text("or proceed with limits")
                     .foregroundColor(.introSubtitle)
                     .font(CabinetGroteskFont.regular.of(size: 17))
+                    .contentShape(Rectangle())
             }
             .disabled(isLoading)
         }

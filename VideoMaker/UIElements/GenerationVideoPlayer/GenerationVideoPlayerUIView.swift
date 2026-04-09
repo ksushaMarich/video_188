@@ -1,6 +1,7 @@
 
 import UIKit
 import AVFoundation
+import SwiftUI
 
 final class GenerationVideoPlayerUIView: UIView {
     private let player = AVQueuePlayer()
@@ -44,4 +45,25 @@ final class GenerationVideoPlayerUIView: UIView {
             self.onProgress?(current, duration)
         }
     }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        (layer as? AVPlayerLayer)?.frame = bounds
+    }
+}
+
+struct InnerPlayer: UIViewRepresentable {
+    let videoURL: URL
+    var onVideoSize: (CGSize) -> Void
+    var onProgress: (Double, Double) -> Void
+
+    func makeUIView(context: Context) -> GenerationVideoPlayerUIView {
+        let view = GenerationVideoPlayerUIView()
+        view.onVideoSize = onVideoSize
+        view.onProgress = onProgress
+        view.configure(url: videoURL)
+        return view
+    }
+
+    func updateUIView(_ uiView: GenerationVideoPlayerUIView, context: Context) {}
 }

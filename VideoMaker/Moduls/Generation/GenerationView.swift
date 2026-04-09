@@ -26,10 +26,6 @@ struct GenerationView: View {
             resultContent
             VStack {
                 customToolBar
-                if toast != nil {
-                    toastView
-                        .transition(.opacity)
-                }
                 Spacer()
             }
         }
@@ -103,7 +99,6 @@ struct GenerationView: View {
 
     private func saveVideoToPhotos() {
         Task { @MainActor in
-            toast = .downloading
             toastDismissTask?.cancel()
             await saveVideoToPhotosIfGranted()
         }
@@ -119,16 +114,18 @@ struct GenerationView: View {
         let startTime = Date()
         PHPhotoLibrary.shared().performChanges {
             PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)
-        } completionHandler: { _, _ in
+        } completionHandler: { success, error in
             Task { @MainActor in
-                let elapsed = Date().timeIntervalSince(startTime)
-                let remaining = max(0, 2.0 - elapsed)
-                if remaining > 0 {
-                    try? await Task.sleep(for: .seconds(remaining))
-                }
-                if !Task.isCancelled {
-                    toast = .downloaded
-                    scheduleToastDismiss()
+                if success {
+                    let elapsed = Date().timeIntervalSince(startTime)
+                    let remaining = max(0, 2.0 - elapsed)
+                    if remaining > 0 {
+                        try? await Task.sleep(for: .seconds(remaining))
+                    }
+                    if !Task.isCancelled {
+                        toast = .downloaded
+                        scheduleToastDismiss()
+                    }
                 }
             }
         }
@@ -149,40 +146,46 @@ struct GenerationView: View {
     @ViewBuilder
     private var customToolBar: some View {
         Group {
-            HStack(spacing: 0) {
-                Button {
-                    dismiss()
-                } label: {
-                    Image(.backIcon)
-                        .resizable()
-                        .frame(width: 24, height: 24)
-                        .padding(10)
-                        .contentShape(Rectangle())
+            ZStack {
+                HStack(spacing: 0) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(.backIcon)
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                            .padding(10)
+                            .contentShape(Rectangle())
+                    }
+                    Spacer()
+                    HStack(spacing: 8) {
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.25)) {
+                                showActionsMenu = true
+                            }
+                        } label: {
+                            Image(.dots)
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                                .padding(10)
+                                .contentShape(Rectangle())
+                        }
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.25)) {
+                                showActionsMenu = true
+                            }
+                        } label: {
+                            Image(.shareIcon)
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                                .padding(10)
+                                .contentShape(Rectangle())
+                        }
+                    }
                 }
-                Spacer()
-                HStack(spacing: 8) {
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.25)) {
-                            showActionsMenu = true
-                        }
-                    } label: {
-                        Image(.dots)
-                            .resizable()
-                            .frame(width: 24, height: 24)
-                            .padding(10)
-                            .contentShape(Rectangle())
-                    }
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.25)) {
-                            showActionsMenu = true
-                        }
-                    } label: {
-                        Image(.shareIcon)
-                            .resizable()
-                            .frame(width: 24, height: 24)
-                            .padding(10)
-                            .contentShape(Rectangle())
-                    }
+                if toast != nil {
+                    toastView
+                        .transition(.opacity)
                 }
             }
         }
@@ -202,63 +205,38 @@ struct GenerationView: View {
             if let kind = toast {
                 HStack(spacing: 8) {
                     switch kind {
-                        case .downloading:
-                        LottieView(animationName: "loaderNeon", loopMode: .loop)
-                                .frame(width: 48, height: 48)
-                                .padding(-12)
-                            Text("Downloading...")
-                                .foregroundColor(.textPrimary)
-                                .padding(.vertical, 15)
-                        case .downloaded, .copied:
-                            Image(.checkCircle)
-                            Text(kind == .downloaded ? "Downloaded" : "Copied")
-                                .foregroundColor(.textPrimary)
-                                .padding(.vertical, 15)
+                    case .downloaded, .deleted:
+                        HStack(spacing: 0) {
+                            Image(kind == .deleted ? .trashIcon : .checkmarkIcon)
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                            Text(kind == .deleted ? "Video Deleted" : "Saved")
+                                .font(CabinetGroteskFont.medium.of(size: 15))
+                                .foregroundColor(.introSubtitle)
+                        }
+                        .background {
+                            BlurView(effect: .dark, intensity: 0.16)
+                                .ignoresSafeArea()
+                                .background(Color.introSubtitle.opacity(0.2))
+                        }
+                    case .failed:
+                        HStack(spacing: 0) {
+                            Image(.crossIcon)
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                            Text("Saving Failed")
+                                .font(CabinetGroteskFont.medium.of(size: 15))
+                                .foregroundColor(.red)
+                        }
                     }
                 }
-                .frame(width: UIScreen.main.bounds.width * 0.54)
-                .background(
+                .clipShape(
                     RoundedRectangle(cornerRadius: 16)
-                        .fill(.fillPrimary))
+                )
             }
         }
         .opacity(toast != nil ? 1 : 0)
         .padding(.top, 8)
-    }
-
-    private func templateCard(_ preset: AIPreset) -> some View {
-        HStack(alignment: .top, spacing: 0) {
-            let content: some View = Group {
-                if let videoURL = preset.videoURL {
-                    LoopingVideoPlayer(videoURL: videoURL)
-                } else {
-                    Image(preset.image)
-                }
-            }
-            content
-                .frame(width: 109, height: 104)
-                .clipShape(RoundedRectangle(cornerRadius: 16))
-                .overlay(alignment: .bottom) {
-                    Text(preset.title)
-                        .foregroundColor(.textPrimary)
-                        .fixedSize(horizontal: true, vertical: true)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .padding(8)
-                }
-
-            Text(preset.presetPrompt)
-                .foregroundColor(.textSecondary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .multilineTextAlignment(.leading)
-                .lineLimit(4)
-                .padding(16)
-        }
-        .frame(height: 104)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(.fillPrimary))
-        .contentShape(RoundedRectangle(cornerRadius: 16))
     }
 
     @ViewBuilder
@@ -303,9 +281,9 @@ struct GenerationView: View {
                 .padding(.horizontal, 16)
                 .frame(maxWidth: .infinity)
 
-                if let preset = viewModel.selectedTemplate {
-                    templateCard(preset)
-                }
+//                if let preset = viewModel.selectedTemplate {
+//                    templateCard(preset)
+//                }
                 Text(viewModel.prompt)
                     .font(CabinetGroteskFont.regular.of(size: 17))
                     .foregroundColor(.introSubtitle)
@@ -315,11 +293,6 @@ struct GenerationView: View {
                     .background(.introSubtitle.opacity(0.2))
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                     .padding(.horizontal, 16)
-//                Button {
-//                    <#code#>
-//                } label: {
-//                    <#code#>
-//                }
             }
             .padding(.top, 72)
         }
@@ -327,9 +300,9 @@ struct GenerationView: View {
 }
 
 private enum GenerationToastKind {
-    case downloading
+    case failed
     case downloaded
-    case copied
+    case deleted
 }
 
 private struct ShareItem: Identifiable {

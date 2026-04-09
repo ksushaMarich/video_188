@@ -1,8 +1,11 @@
 import Lottie
 import SwiftUI
 
-struct MainView: View {
-    @StateObject private var viewModel = MainViewModel()
+struct VideoCreationView: View {
+    @StateObject private var viewModel = VideoCreationViewModel()
+    @Environment(\.managedObjectContext) var context
+    @EnvironmentObject var purchaseManager: PurchaseManager
+    @EnvironmentObject var mainViewModel: MainViewModel
     @EnvironmentObject private var generationLimitManager: GenerationLimitManager
     
     
@@ -11,8 +14,7 @@ struct MainView: View {
     @State private var showEffectView = false
     @State private var showImageSelectionOverlay = false
     @State private var hasShownInitialImageOverlay = false
-    @State private var imageValidationError: ImageValidationError?
-    @EnvironmentObject private var purchaseManager: PurchaseManager
+    @State private var isImageInvalid = false
     
     @State private var showNotEnough = false
     @State private var showAllUsed = false
@@ -36,21 +38,16 @@ struct MainView: View {
         .sheet(isPresented: $showImagePicker) {
             ImagePicker(selectedImage: $viewModel.selectedImage) { image, provider in
                 viewModel.isValidatingImage = true
-                imageValidationError = nil
-                ImageValidationService.shared.validate(image: image, itemProvider: provider) { result in
-                    viewModel.isValidatingImage = false
-                    switch result {
-                    case .valid:
-                        viewModel.selectedImage = image
-                        hasShownInitialImageOverlay = true
-                        showImageSelectionOverlay = true
-                        Task { @MainActor in
-                            try? await Task.sleep(for: .seconds(2))
-                            showImageSelectionOverlay = false
-                        }
-                    case let .invalid(error):
-                        imageValidationError = error
+                if viewModel.isValidSize(data: nil, image: image) {
+                    viewModel.selectedImage = image
+                    hasShownInitialImageOverlay = true
+                    showImageSelectionOverlay = true
+                    Task { @MainActor in
+                        try? await Task.sleep(for: .seconds(2))
+                        showImageSelectionOverlay = false
                     }
+                } else {
+                    isImageInvalid = true
                 }
             }
         }
@@ -76,6 +73,13 @@ struct MainView: View {
         }
         .onTapGesture {
             hideKeyboard()
+        }
+        .onChange(of: viewModel.generatedVideoURL) { _, newValue in
+            guard let url = newValue else { return }
+            
+            viewModel.generateThumbnail(from: url) { thumbnailImage in
+                viewModel.generatedVideo = mainViewModel.create(context: context, videoURL: url, prompt: viewModel.promt, duration: viewModel.duration.rawValue, quality: viewModel.duration.rawValue, generationMode: viewModel.generationMode.rawValue, thumbnailImage: thumbnailImage)
+            }
         }
     }
     
@@ -150,6 +154,7 @@ struct MainView: View {
                                 .padding(.vertical, 12)
                         }
                         .padding(.horizontal, 16)
+                        .contentShape(Rectangle())
                     }
                 }
             } else {

@@ -1,15 +1,17 @@
-import CoreData
+internal import CoreData
 import SwiftUI
 
 struct LabView: View {
+    @Environment(\.managedObjectContext) var context
+    @EnvironmentObject private var mainTabViewModel: MainTabViewModel
+    @EnvironmentObject var mainViewModel: MainViewModel
     @StateObject private var viewModel = LabViewModel()
-    @EnvironmentObject private var mainViewModel: MainTabViewModel
     @State private var selectedVideo: LibraryItem?
     @State private var headerHeight: CGFloat = 0
 
     var body: some View {
         ZStack {
-            if viewModel.items.isEmpty {
+            if mainViewModel.results.isEmpty {
                 emptyView
             } else {
                 content
@@ -60,7 +62,7 @@ struct LabView: View {
         ]
 
         return LazyVGrid(columns: columns, spacing: 16) {
-            ForEach(viewModel.items) { item in
+            ForEach(mainViewModel.results) { item in
                 LabVideoCard(preset: item) {
                     selectedVideo = item
                 }
@@ -84,7 +86,7 @@ struct LabView: View {
             }
             
             Button {
-                mainViewModel.selectedTab = .main
+                mainTabViewModel.selectedTab = .main
             } label: {
                 HStack(spacing: 0) {
                     Text("Make a Video")
