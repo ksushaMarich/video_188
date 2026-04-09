@@ -107,32 +107,12 @@ final class VideoCreationViewModel: ObservableObject {
         do {
             try data.write(to: permanentURL)
             generatedVideoURL = permanentURL
-//            resultPlayer = AVPlayer(url: permanentURL)
-//            setupResultPlayerObserver()
         } catch {
             progressState = .fail
             return
         }
         progressState = nil
     }
-    
-//    private func saveVideoToCoreData() {
-//        guard let videoURL = generatedVideoURL else { return }
-//
-//        CoreDataManager.shared.generateThumbnail(from: videoURL) { [weak self] thumbnailImage in
-//            guard let self = self else { return }
-//
-//            generatedVideo = CoreDataManager.shared.saveGeneratedVideo(
-//                videoURL: videoURL,
-//                prompt: self.promt,
-//                duration: self.duration.rawValue,
-//                quality: self.quality.rawValue,
-//                generationMode: self.generationMode.rawValue,
-//                selectedTemplateId: nil,
-//                thumbnailImage: thumbnailImage,
-//                sourceImage: self.generationMode == .imageToVideo ? self.selectedImage : nil)
-//        }
-//    }
     
     func generateThumbnail(from videoURL: URL, completion: @escaping (UIImage?) -> Void) {
         guard FileManager.default.fileExists(atPath: videoURL.path) else {

@@ -280,10 +280,7 @@ struct GenerationView: View {
                 .padding(.top, 8)
                 .padding(.horizontal, 16)
                 .frame(maxWidth: .infinity)
-
-//                if let preset = viewModel.selectedTemplate {
-//                    templateCard(preset)
-//                }
+                
                 Text(viewModel.prompt)
                     .font(CabinetGroteskFont.regular.of(size: 17))
                     .foregroundColor(.introSubtitle)
