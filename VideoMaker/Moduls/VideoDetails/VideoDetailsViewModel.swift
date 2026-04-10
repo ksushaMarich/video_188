@@ -1,4 +1,5 @@
 import AVFoundation
+import Photos
 public import CoreData
 import Foundation
 import UIKit
@@ -15,6 +16,8 @@ final class VideoDetailsViewModel: ObservableObject {
     @Published var quality: Quality = ._768
     @Published var duration: Duration = ._6
     @Published var generatedVideoURL: URL?
+    @Published var toast: GenerationToastKind?
+    @Published var toastDismissTask: Task<Void, Never>?
 
     private let connectorLength = 3
 
@@ -29,5 +32,49 @@ final class VideoDetailsViewModel: ObservableObject {
         duration = Duration(raw: libraryItem.duration)
         quality = Quality(raw: libraryItem.resolution)
         generationMode = GenerationMode(rawValue: libraryItem.generationMode) ?? .textToVideo
+    }
+    
+    func saveVideoToPhotos() {
+        Task { @MainActor in
+            toastDismissTask?.cancel()
+            await saveVideoToPhotosIfGranted()
+        }
+    }
+
+    private func saveVideoToPhotosIfGranted() async {
+        guard let url = generatedVideoURL else { return }
+        let granted = await PermissionService.shared.requestPhotoLibraryPermission()
+        guard granted else {
+            await MainActor.run { toast = nil }
+            return
+        }
+        let startTime = Date()
+        PHPhotoLibrary.shared().performChanges {
+            PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)
+        } completionHandler: { success, error in
+            Task { @MainActor in
+                if success {
+                    let elapsed = Date().timeIntervalSince(startTime)
+                    let remaining = max(0, 2.0 - elapsed)
+                    if remaining > 0 {
+                        try? await Task.sleep(for: .seconds(remaining))
+                    }
+                    if !Task.isCancelled {
+                        self.toast = .downloaded
+                        self.scheduleToastDismiss()
+                    }
+                }
+            }
+        }
+    }
+    
+    private func scheduleToastDismiss() {
+        toastDismissTask?.cancel()
+        toastDismissTask = Task { @MainActor in
+            try? await Task.sleep(for: .seconds(2))
+            if !Task.isCancelled {
+                toast = nil
+            }
+        }
     }
 }
