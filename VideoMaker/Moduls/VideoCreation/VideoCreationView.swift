@@ -20,21 +20,14 @@ struct VideoCreationView: View {
     @State private var showAllUsed = false
     
     var body: some View {
-        ZStack {
-            VStack(spacing: 0) {
-                customToolBar
-                    .background(Color.mainBackground.ignoresSafeArea())
-                content
-            }
+        VStack(spacing: 0) {
+            customToolBar
+                .background(Color.mainBackground.ignoresSafeArea())
+            content
         }
         .navigationDestination(isPresented: $showEffectView, destination: {
             Text("Effects")
         })
-        .navigationDestination(item: $viewModel.generatedVideo) { video in
-            Group {
-                GenerationView(libraryItem: video)
-            }
-        }
         .sheet(isPresented: $showImagePicker) {
             ImagePicker(selectedImage: $viewModel.selectedImage) { image, provider in
                 viewModel.isValidatingImage = true
@@ -52,24 +45,18 @@ struct VideoCreationView: View {
             }
         }
         .fullScreenCover(isPresented: $viewModel.isGeneration) {
-            switch viewModel.progressState {
-            case .preparing:
-                Text("preparing")
-            case .inQueue:
-                Text("inQueue")
-            case .generation:
-                Text("generation")
-            case .fail:
-                Text("fail")
-            default:
-                Text("fail")
+            if let generatedVideo = viewModel.generatedVideo {
+                VideoDetailsView(libraryItem: generatedVideo)
+                    .onAppear {
+                        viewModel.promt = ""
+                        viewModel.duration = ._6
+                        viewModel.quality = ._768
+                        viewModel.selectedImage = nil
+                    }
+            } else {
+                GenerationView(generationState: $viewModel.progressState)
+                    .environmentObject(viewModel)
             }
-        }
-        .onAppear {
-            viewModel.promt = ""
-            viewModel.duration = ._6
-            viewModel.quality = ._768
-            viewModel.selectedImage = nil
         }
         .onTapGesture {
             hideKeyboard()
@@ -235,16 +222,17 @@ struct VideoCreationView: View {
         VStack(spacing: 8) {
             ZStack(alignment: .topLeading) {
                 TextField("", text: promtBinding, axis: .vertical)
-                    .foregroundColor(.textPrimary)
-                    .tint(.accentPrimary)
+                    .foregroundColor(.introSubtitle)
+                    .font(CabinetGroteskFont.regular.of(size: 17))
                     .focused($isPromptFocused)
                     .scrollContentBackground(.hidden)
                     .background(Color.clear)
                     .scrollIndicators(.hidden)
 
                 if viewModel.promt.isEmpty {
-                    Text("Enter your prompt here")
-                        .foregroundColor(.textTertiary)
+                    Text("Describe your vision")
+                        .foregroundColor(.introSubtitle.opacity(0.6))
+                        .font(CabinetGroteskFont.regular.of(size: 17))
                         .multilineTextAlignment(.leading)
                         .allowsHitTesting(false)
                 }

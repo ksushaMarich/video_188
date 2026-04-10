@@ -9,26 +9,26 @@ enum GenerationState: CaseIterable {
     var title: String {
         switch self {
             case .preparing:
-                return "Preparing your scene…"
+                return "Generating Video"
             case .inQueue:
-                return "In queue…"
+                return "Making Video"
             case .generation:
-                return "Generating your video…"
+                return "Making Video"
             case .fail:
-                return "Generating your video…"
+                return "Generation Error"
         }
     }
 
     var subtitle: String {
         switch self {
             case .preparing:
-                return "Setting up your assets and optimizing\ngeneration settings"
+                return "Preparing..."
             case .inQueue:
-                return "Your request is waiting for available\nprocessing power"
+                return "Queueing..."
             case .generation:
-                return "Rendering frames, applying motion, and\nbuilding your scene in real time"
+                return "Processing..."
             case .fail:
-                return "Rendering frames, applying motion, and\nbuilding your scene in real time"
+                return "Try again or quit"
         }
     }
 }

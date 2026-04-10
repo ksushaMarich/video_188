@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		165E89ED2F890C1A003753D3 /* ApphudBase in Frameworks */ = {isa = PBXBuildFile; productRef = 165E89EC2F890C1A003753D3 /* ApphudBase */; };
+		165E8C402F8917CA003753D3 /* ApphudBase in Frameworks */ = {isa = PBXBuildFile; productRef = 165E8C3F2F8917CA003753D3 /* ApphudBase */; };
+		165E8C432F891807003753D3 /* ApphudBase in Frameworks */ = {isa = PBXBuildFile; productRef = 165E8C422F891807003753D3 /* ApphudBase */; };
 		168BB6BB2F83AC17004F25E4 /* ApphudBase in Frameworks */ = {isa = PBXBuildFile; productRef = 168BB6BA2F83AC17004F25E4 /* ApphudBase */; };
 		168BB6BE2F83AC6D004F25E4 /* ObfuscateMacro in Frameworks */ = {isa = PBXBuildFile; productRef = 168BB6BD2F83AC6D004F25E4 /* ObfuscateMacro */; };
 		16BC439A2F7D439A00984509 /* ApphudBase in Frameworks */ = {isa = PBXBuildFile; productRef = 16BC43992F7D439A00984509 /* ApphudBase */; };
@@ -52,10 +54,12 @@
 				165E89ED2F890C1A003753D3 /* ApphudBase in Frameworks */,
 				92D304EE18533FEB668C6D94 /* Pods_VideoMaker.framework in Frameworks */,
 				16BC439A2F7D439A00984509 /* ApphudBase in Frameworks */,
+				165E8C432F891807003753D3 /* ApphudBase in Frameworks */,
 				168BB6BB2F83AC17004F25E4 /* ApphudBase in Frameworks */,
 				16C768772F7E80CA0030DFFD /* Lottie in Frameworks */,
 				168BB6BE2F83AC6D004F25E4 /* ObfuscateMacro in Frameworks */,
 				16C76D0E2F804B5A0030DFFD /* ApphudBase in Frameworks */,
+				165E8C402F8917CA003753D3 /* ApphudBase in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -148,7 +152,7 @@
 			packageReferences = (
 				16C768752F7E80CA0030DFFD /* XCRemoteSwiftPackageReference "lottie-ios" */,
 				168BB6BC2F83AC6D004F25E4 /* XCLocalSwiftPackageReference "ObfuscateMacro" */,
-				165E89EB2F890C1A003753D3 /* XCLocalSwiftPackageReference "ApphudBase" */,
+				165E8C412F891807003753D3 /* XCLocalSwiftPackageReference "ApphudBase" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 16BC43572F7D423A00984509 /* Products */;
@@ -439,7 +443,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		165E89EB2F890C1A003753D3 /* XCLocalSwiftPackageReference "ApphudBase" */ = {
+		165E8C412F891807003753D3 /* XCLocalSwiftPackageReference "ApphudBase" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ApphudBase;
 		};
@@ -462,6 +466,14 @@
 
 /* Begin XCSwiftPackageProductDependency section */
 		165E89EC2F890C1A003753D3 /* ApphudBase */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ApphudBase;
+		};
+		165E8C3F2F8917CA003753D3 /* ApphudBase */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ApphudBase;
+		};
+		165E8C422F891807003753D3 /* ApphudBase */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = ApphudBase;
 		};

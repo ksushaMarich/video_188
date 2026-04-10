@@ -12,7 +12,6 @@ struct LoopingVideoPlayer: View {
                 VideoPlayerRepresentable(player: .constant(player), videoGravity: .resizeAspectFill)
             } else {
                 Rectangle()
-                    .fill(Color.fillSecondary)
                     .redacted(reason: .placeholder)
             }
         }

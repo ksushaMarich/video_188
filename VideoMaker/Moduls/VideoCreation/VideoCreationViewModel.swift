@@ -12,8 +12,6 @@ final class VideoCreationViewModel: ObservableObject {
         didSet {
             if progressState != nil {
                 isGeneration = true
-            } else {
-                isGeneration = false
             }
         }
     }
@@ -111,7 +109,6 @@ final class VideoCreationViewModel: ObservableObject {
             progressState = .fail
             return
         }
-        progressState = nil
     }
     
     func generateThumbnail(from videoURL: URL, completion: @escaping (UIImage?) -> Void) {

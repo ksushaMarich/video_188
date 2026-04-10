@@ -111,13 +111,15 @@ struct OnboardingPaywallView: View {
 
         VStack(alignment: .leading, spacing: 4) {
             Text("Subscribe to unlock all the features\nfor just \(price)")
-                .foregroundColor(.textPrimary)
+                .foregroundColor(.introSubtitle)
+                .font(CabinetGroteskFont.regular.of(size: 17))
 
             Button {
                 purchaseManager.hasSeenOnBoarding = true
             } label: {
                 Text("or proceed with limits")
-                    .foregroundColor(.textSecondary)
+                    .foregroundColor(.introSubtitle)
+                    .font(CabinetGroteskFont.regular.of(size: 17))
                     .contentShape(Rectangle())
             }
             .disabled(isLoading)
