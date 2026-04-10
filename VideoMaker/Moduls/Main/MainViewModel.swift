@@ -1,7 +1,7 @@
 
 import Foundation
 import Combine
-internal import CoreData
+public import CoreData
 import SwiftUI
 
 final class MainViewModel: ObservableObject {

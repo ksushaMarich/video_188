@@ -1,6 +1,6 @@
 
 import SwiftUI
-internal import CoreData
+public import CoreData
 
 @main
 struct VideoMakerApp: App {

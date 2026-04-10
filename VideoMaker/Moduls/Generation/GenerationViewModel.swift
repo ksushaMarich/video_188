@@ -1,5 +1,5 @@
 import AVFoundation
-internal import CoreData
+public import CoreData
 import Foundation
 import UIKit
 import Combine

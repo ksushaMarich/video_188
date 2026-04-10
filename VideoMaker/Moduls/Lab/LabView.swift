@@ -1,11 +1,10 @@
-internal import CoreData
+public import CoreData
 import SwiftUI
 
 struct LabView: View {
     @Environment(\.managedObjectContext) var context
     @EnvironmentObject private var mainTabViewModel: MainTabViewModel
     @EnvironmentObject var mainViewModel: MainViewModel
-    @StateObject private var viewModel = LabViewModel()
     @State private var selectedVideo: LibraryItem?
     @State private var headerHeight: CGFloat = 0
 
