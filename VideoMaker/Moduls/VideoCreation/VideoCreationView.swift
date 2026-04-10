@@ -4,6 +4,7 @@ import SwiftUI
 struct VideoCreationView: View {
     @StateObject private var viewModel = VideoCreationViewModel()
     @Environment(\.managedObjectContext) var context
+    @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var purchaseManager: PurchaseManager
     @EnvironmentObject var mainViewModel: MainViewModel
     @EnvironmentObject private var generationLimitManager: GenerationLimitManager
@@ -11,7 +12,9 @@ struct VideoCreationView: View {
     
     @FocusState private var isPromptFocused: Bool
     @State private var showImagePicker = false
+    @State private var showCamera = false
     @State private var showEffectView = false
+    @State private var showGalleryOrCamera = false
     @State private var showImageSelectionOverlay = false
     @State private var hasShownInitialImageOverlay = false
     @State private var isImageInvalid = false
@@ -20,10 +23,12 @@ struct VideoCreationView: View {
     @State private var showAllUsed = false
     
     var body: some View {
-        VStack(spacing: 0) {
-            customToolBar
-                .background(Color.mainBackground.ignoresSafeArea())
-            content
+        ZStack {
+            VStack(spacing: 0) {
+                customToolBar
+                    .background(Color.mainBackground.ignoresSafeArea())
+                content
+            }
         }
         .navigationDestination(isPresented: $showEffectView, destination: {
             Text("Effects")
@@ -44,6 +49,27 @@ struct VideoCreationView: View {
                 }
             }
         }
+        
+        .fullScreenCover(isPresented: $showCamera) {
+            CameraPicker { image in
+                if viewModel.isValidSize(data: nil, image: image) {
+                    viewModel.selectedImage = image
+                    hasShownInitialImageOverlay = true
+                    showImageSelectionOverlay = true
+                    Task { @MainActor in
+                        try? await Task.sleep(for: .seconds(2))
+                        showImageSelectionOverlay = false
+                    }
+                } else {
+                    isImageInvalid = true
+                }
+            }
+            .background(.black)
+        }
+        .fullScreenCover(isPresented: $showGalleryOrCamera) {
+            galleryOrCameraView
+                .background(TransparentBackground())
+        }
         .fullScreenCover(isPresented: $viewModel.isGeneration) {
             if let generatedVideo = viewModel.generatedVideo {
                 VideoDetailsView(libraryItem: generatedVideo)
@@ -58,6 +84,10 @@ struct VideoCreationView: View {
                     .environmentObject(viewModel)
             }
         }
+//        .fullScreenCover(isPresented: $showGalleryOrCamera) {
+//            galleryOrCameraView
+//                .background(.clear)
+//        }
         .onTapGesture {
             hideKeyboard()
         }
@@ -125,11 +155,7 @@ struct VideoCreationView: View {
                         .frame(maxWidth: .infinity)
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                     Button {
-                        Task {
-                            if await PermissionService.shared.requestPhotoLibraryPermission() {
-                                showImagePicker = true
-                            }
-                        }
+                        showGalleryOrCamera = true
                     } label: {
                         HStack(spacing: 8) {
                             Text("Replace image")
@@ -147,11 +173,7 @@ struct VideoCreationView: View {
             } else {
                 VStack(spacing: 0) {
                     Button {
-                        Task {
-                            if await PermissionService.shared.requestPhotoLibraryPermission() {
-                                showImagePicker = true
-                            }
-                        }
+                        showGalleryOrCamera = true
                     } label: {
                         VStack(spacing: 0) {
                             HStack(spacing: 8) {
@@ -339,5 +361,75 @@ struct VideoCreationView: View {
             .padding(.top, 16)
         }
         .disabled(!viewModel.canGenerate)
+    }
+    
+    @ViewBuilder
+    private var galleryOrCameraView: some View {
+        VStack(spacing: 16) {
+            Spacer()
+            Button {
+                showGalleryOrCamera = false
+                Task {
+                    if await PermissionService.shared.requestPhotoLibraryPermission() {
+                        showImagePicker = true
+                    }
+                }
+            } label: {
+                HStack{
+                    Text("Upload From Photos")
+                        .foregroundColor(.textBlack)
+                        .font(CabinetGroteskFont.bold.of(size: 16))
+                    Spacer()
+                    Image(.galleryIcon)
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                }
+                .padding(.leading, 16)
+                .padding(.trailing, 12)
+                .padding(.vertical, 12)
+                .background(.introAccentSecondary)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .contentShape(RoundedRectangle(cornerRadius: 8))
+            }
+            Button {
+                showGalleryOrCamera = false
+                Task {
+                    if await PermissionService.shared.requestCameraUsageAccess() {
+                        showCamera = true
+                    }
+                }
+            } label: {
+                HStack{
+                    Text("Take a New Photo")
+                        .foregroundColor(.introSubtitle)
+                        .font(CabinetGroteskFont.bold.of(size: 16))
+                    Spacer()
+                    Image(.cameraIcon)
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                }
+                .padding(.leading, 16)
+                .padding(.trailing, 12)
+                .padding(.vertical, 12)
+                .background(.introSubtitle.opacity(0.2))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .contentShape(RoundedRectangle(cornerRadius: 8))
+            }
+            Button {
+                showGalleryOrCamera = false
+            } label: {
+                Image(.whiteCrossIcon)
+                    .resizable()
+                    .frame(width: 48, height: 48)
+                    .contentShape(Rectangle())
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(.horizontal, 16)
+        .background(
+            BlurView(effect: .dark, intensity: 0.24)
+                .ignoresSafeArea()
+                .background(.textBlack.opacity(0.8))
+        )
     }
 }

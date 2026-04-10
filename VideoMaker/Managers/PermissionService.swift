@@ -11,6 +11,8 @@ final class PermissionService: ObservableObject {
     private var isAlertVisible = false
     static let shared = PermissionService()
     private init() {}
+    
+    // Photo
 
     func requestPhotoLibraryPermission() async -> Bool {
         switch PHPhotoLibrary.authorizationStatus(for: .readWrite) {
@@ -18,7 +20,7 @@ final class PermissionService: ObservableObject {
                 return true
 
             case .denied, .restricted:
-                await showSettingsAlert(for: .photoLibrary)
+                showSettingsAlert(for: .photoLibrary)
                 return false
 
             case .notDetermined:
@@ -35,7 +37,7 @@ final class PermissionService: ObservableObject {
                 let granted = status == .authorized || status == .limited
                 if !granted {
                     Task { @MainActor in
-                        await self.showSettingsAlert(for: .photoLibrary)
+                        self.showSettingsAlert(for: .photoLibrary)
                     }
                 }
                 continuation.resume(returning: granted)
@@ -72,6 +74,38 @@ final class PermissionService: ObservableObject {
 
         topVC.present(alert, animated: true)
     }
+    
+    // Camera
+    
+    func requestCameraUsageAccess() async -> Bool {
+        let currentStatus = AVCaptureDevice.authorizationStatus(for: .video)
+
+        if currentStatus == .authorized {
+            return (true)
+        }
+
+        if currentStatus == .denied || currentStatus == .restricted {
+            Task { @MainActor in
+                self.showSettingsAlert(for: .camera)
+            }
+            return false
+        }
+
+        let isGranted = await withCheckedContinuation { continuation in
+            AVCaptureDevice.requestAccess(for: .video) { isAuthorized in
+                continuation.resume(returning: isAuthorized)
+            }
+        }
+
+        if isGranted {
+            return true
+        }
+
+        Task { @MainActor in
+            self.showSettingsAlert(for: .camera)
+        }
+        return false
+    }
 
     private func openAppSettings() {
         guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else { return }
@@ -100,23 +134,5 @@ final class PermissionService: ObservableObject {
         }
 
         return base
-    }
-}
-
-enum PermissionType {
-    case photoLibrary
-
-    var alertTitle: String {
-        switch self {
-            case .photoLibrary:
-                return "No access to Photos"
-        }
-    }
-
-    var alertMessage: String {
-        switch self {
-            case .photoLibrary:
-                return "We need access to your photos to use your images as the first frame and to save your generated videos"
-        }
     }
 }
