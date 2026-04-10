@@ -29,6 +29,7 @@ struct MainTabView: View {
         switch tab {
         case .main:
             VideoCreationView()
+                .environmentObject(viewModel)
         case .lab:
             LabView()
                 .environmentObject(viewModel)

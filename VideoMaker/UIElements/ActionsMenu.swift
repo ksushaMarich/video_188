@@ -14,33 +14,33 @@ struct ActionsMenu: View {
             VStack(spacing: 0) {
                 menuButton(isPrem: !purchaseManager.isSubscribed, title: "Generate again", action: onGenerateAgain)
                 Rectangle()
-                    .fill(Color.textSecondary.opacity(0.1))
+                    .fill(Color.red.opacity(0.1))
                     .frame(height: 1)
                 menuButton(isPrem: false, title: "Use prompt", action: onUsePrompt)
                 Rectangle()
-                    .fill(Color.textSecondary.opacity(0.1))
+                    .fill(Color.red.opacity(0.1))
                     .frame(height: 1)
                 menuButton(isPrem: !purchaseManager.isSubscribed, title: "Save to Photos", action: onSaveToPhotos)
                 Rectangle()
-                    .fill(Color.textSecondary.opacity(0.1))
+                    .fill(Color.red.opacity(0.1))
                     .frame(height: 1)
                 menuButton(isPrem: !purchaseManager.isSubscribed, title: "Share", action: onShare)
             }
             .background(
                 RoundedRectangle(cornerRadius: 16)
-                    .fill(.fillSecondary))
+                    .fill(.red))
             .clipShape(RoundedRectangle(cornerRadius: 16))
 
             Button {
                 onCancel?()
             } label: {
                 Text("Cancel")
-                    .foregroundColor(.textSecondary)
+                    .foregroundColor(.red)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
                     .background(
                         RoundedRectangle(cornerRadius: 16)
-                            .fill(.fillSecondary))
+                            .fill(.red))
                     .contentShape(RoundedRectangle(cornerRadius: 16))
             }
         }
@@ -52,13 +52,9 @@ struct ActionsMenu: View {
             action?()
         } label: {
             HStack(spacing: 9) {
-                if isPrem {
-                    Image(.premCrown)
-                        .padding(-1)
-                }
 
                 Text(title)
-                    .foregroundColor(.textPrimary)
+                    .foregroundColor(.red)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)

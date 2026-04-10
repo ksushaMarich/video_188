@@ -17,7 +17,8 @@ struct LabView: View {
             }
             VStack(spacing: 0) {
                 Text("Your Creations")
-                    .foregroundColor(.textPrimary)
+                    .foregroundColor(.introSubtitle)
+                    .font(CabinetGroteskFont.medium.of(size: 17))
                     .frame(maxWidth: .infinity)
                     .padding(.top, 11)
                     .padding(.bottom, 21)
@@ -41,7 +42,7 @@ struct LabView: View {
         .navigationDestination(item: $selectedVideo) { video in
             Group {
                 if video.videoURL != nil {
-                    GenerationView(libraryItem: video)
+                    VideoDetailsView(libraryItem: video)
                 }
             }
         }
