@@ -26,7 +26,7 @@ final class PurchaseManager: ObservableObject {
             self.configure(with: paywall)
         }
         #if DEBUG
-            isSubscribed = false
+            isSubscribed = true
         #else
             isSubscribed = Apphud.hasPremiumAccess()
         #endif

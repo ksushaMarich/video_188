@@ -1,6 +1,10 @@
 import SwiftUI
 
 extension UIApplication {
+    
+    func endEditing() {
+        sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
 
     var topViewController: UIViewController? {
         guard let windowScene = connectedScenes.first as? UIWindowScene,
@@ -13,4 +17,8 @@ extension UIApplication {
         }
         return topController
     }
+}
+
+public func hideKeyboard() {
+    UIApplication.shared.endEditing()
 }

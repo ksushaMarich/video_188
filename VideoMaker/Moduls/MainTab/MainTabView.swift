@@ -20,6 +20,7 @@ struct MainTabView: View {
                 Color.mainBackground
                     .ignoresSafeArea()
             )
+            .ignoresSafeArea(.keyboard)
         }
     }
 
@@ -27,7 +28,7 @@ struct MainTabView: View {
     private func tabContent(for tab: TabItem) -> some View {
         switch tab {
         case .main:
-            Text("Home")
+            VideoCreationView()
         case .lab:
             LabView()
                 .environmentObject(viewModel)
