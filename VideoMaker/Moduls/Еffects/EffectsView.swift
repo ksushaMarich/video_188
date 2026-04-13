@@ -9,9 +9,8 @@ struct EffectsView: View {
         ScrollView(.vertical, showsIndicators: false) {
             libraryItemsList
         }
-        .safeAreaInset(edge: .top, spacing: 0) {
+        .overlay(alignment: .top) {
             header
-                .background(.clear)
         }
         .toolbar(.hidden, for: .navigationBar)
         .background(Color.mainBackground.ignoresSafeArea())
@@ -68,7 +67,7 @@ struct EffectsView: View {
                 }
             }
             .padding(.horizontal, 16)
-            .padding(.top, 16)
+            .padding(.top, 16 + 54)
         }
     }
 }
