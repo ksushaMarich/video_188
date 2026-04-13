@@ -10,7 +10,7 @@ struct LibraryItem: Hashable, Identifiable {
     let resolution: String
     let videoURL: URL?
     let generationMode: String
-    let selectedTemplate: AIPreset?
+    let selectedTemplate: EffectType?
     let sourceImage: UIImage?
     let generatedVideo: GeneratedVideo?
 
@@ -23,7 +23,7 @@ struct LibraryItem: Hashable, Identifiable {
         resolution: String,
         videoURL: URL? = nil,
         generationMode: String = GenerationMode.textToVideo.rawValue,
-        selectedTemplate: AIPreset? = nil,
+        selectedTemplate: EffectType? = nil,
         sourceImage: UIImage? = nil,
         generatedVideo: GeneratedVideo? = nil)
     {
@@ -49,7 +49,7 @@ struct LibraryItem: Hashable, Identifiable {
         resolution = generatedVideo.quality ?? ""
         videoURL = generatedVideo.videoURL
         generationMode = generatedVideo.generationMode ?? GenerationMode.textToVideo.rawValue
-        selectedTemplate = (generatedVideo.selectedTemplateId).flatMap { AIPreset(rawValue: $0) }
+        selectedTemplate = (generatedVideo.selectedTemplateId).flatMap { EffectType(rawValue: $0) }
         sourceImage = generatedVideo.sourceImageData.flatMap { UIImage(data: $0) }
         self.generatedVideo = generatedVideo
     }
@@ -63,7 +63,7 @@ struct LibraryItem: Hashable, Identifiable {
         resolution = generatedVideo.quality ?? ""
         videoURL = resolvedVideoURL
         generationMode = generatedVideo.generationMode ?? GenerationMode.textToVideo.rawValue
-        selectedTemplate = (generatedVideo.selectedTemplateId).flatMap { AIPreset(rawValue: $0) }
+        selectedTemplate = (generatedVideo.selectedTemplateId).flatMap { EffectType(rawValue: $0) }
         sourceImage = generatedVideo.sourceImageData.flatMap { UIImage(data: $0) }
         self.generatedVideo = generatedVideo
     }

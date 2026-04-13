@@ -15,6 +15,7 @@ final class VideoCreationViewModel: ObservableObject {
             }
         }
     }
+    @Published var selectedEffect: EffectType? = nil
     @Published var generatedVideoURL: URL?
     @Published var generatedVideoData: Data?
     @Published var generatedVideo: LibraryItem? = nil
@@ -56,7 +57,7 @@ final class VideoCreationViewModel: ObservableObject {
         switch generationMode {
         case .textToVideo:
             MiniMaxApiService.shared.generateVideoFromText(
-                prompt: promt,
+                prompt: (selectedEffect?.prompt ?? "") + promt,
                 quality: quality,
                 duration: duration)
             { [weak self] result in
@@ -171,5 +172,13 @@ final class VideoCreationViewModel: ObservableObject {
             return false
         }
         return true
+    }
+    
+    func getEffectTypeName() -> String {
+        if let selectedEffect {
+            return selectedEffect.rawValue.replacingOccurrences(of: "\n", with: " ")
+        } else {
+            return "None"
+        }
     }
 }

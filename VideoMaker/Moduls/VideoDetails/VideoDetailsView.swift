@@ -232,6 +232,23 @@ struct VideoDetailsView: View {
                 .padding(.horizontal, 16)
                 .frame(maxWidth: .infinity)
                 
+                if let effect = viewModel.selectedTemplate {
+                    HStack {
+                        Text("Effect Title")
+                            .font(CabinetGroteskFont.medium.of(size: 17))
+                            .foregroundColor(.introSubtitle)
+                            .padding(.vertical, 14)
+                        Spacer()
+                        Text(effect.rawValue.replacingOccurrences(of: "\n", with: " "))
+                            .font(CabinetGroteskFont.regular.of(size: 17))
+                            .foregroundColor(.introSubtitle.opacity(0.6))
+                    }
+                    .padding(.horizontal, 16)
+                    .background(.introSubtitle.opacity(0.2))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .padding(.horizontal, 16)
+                }
+                
                 Text(viewModel.prompt)
                     .font(CabinetGroteskFont.regular.of(size: 17))
                     .foregroundColor(.introSubtitle)

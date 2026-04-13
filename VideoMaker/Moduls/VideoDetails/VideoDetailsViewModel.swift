@@ -11,7 +11,7 @@ private let maxPromptLength = 2000
 final class VideoDetailsViewModel: ObservableObject {
     @Published var prompt = ""
     @Published var generationMode: GenerationMode = .textToVideo
-    @Published var selectedTemplate: AIPreset?
+    @Published var selectedTemplate: EffectType?
     @Published var selectedImage: UIImage?
     @Published var quality: Quality = ._768
     @Published var duration: Duration = ._6

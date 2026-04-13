@@ -9,7 +9,6 @@ struct VideoCreationView: View {
     @EnvironmentObject var mainViewModel: MainViewModel
     @EnvironmentObject private var generationLimitManager: GenerationLimitManager
     
-    
     @FocusState private var isPromptFocused: Bool
     @State private var showImagePicker = false
     @State private var showCamera = false
@@ -31,7 +30,8 @@ struct VideoCreationView: View {
             }
         }
         .navigationDestination(isPresented: $showEffectView, destination: {
-            Text("Effects")
+            EffectsView()
+                .environmentObject(viewModel)
         })
         .sheet(isPresented: $showImagePicker) {
             ImagePicker(selectedImage: $viewModel.selectedImage) { image, provider in
@@ -84,10 +84,6 @@ struct VideoCreationView: View {
                     .environmentObject(viewModel)
             }
         }
-//        .fullScreenCover(isPresented: $showGalleryOrCamera) {
-//            galleryOrCameraView
-//                .background(.clear)
-//        }
         .onTapGesture {
             hideKeyboard()
         }
@@ -95,7 +91,7 @@ struct VideoCreationView: View {
             guard let url = newValue else { return }
             
             viewModel.generateThumbnail(from: url) { thumbnailImage in
-                viewModel.generatedVideo = mainViewModel.create(context: context, videoURL: url, prompt: viewModel.promt, duration: viewModel.duration.rawValue, quality: viewModel.duration.rawValue, generationMode: viewModel.generationMode.rawValue, thumbnailImage: thumbnailImage)
+                viewModel.generatedVideo = mainViewModel.create(context: context, videoURL: url, prompt: viewModel.promt, duration: viewModel.duration.rawValue, quality: viewModel.duration.rawValue, generationMode: viewModel.generationMode.rawValue, selectedTemplateId: viewModel.selectedEffect?.id, thumbnailImage: thumbnailImage)
             }
         }
     }
@@ -222,7 +218,7 @@ struct VideoCreationView: View {
                     .foregroundStyle(.introSubtitle)
                 Spacer()
                 HStack(spacing: 12)  {
-                    Text("None")
+                    Text(viewModel.getEffectTypeName())
                         .font(CabinetGroteskFont.regular.of(size: 17))
                         .foregroundStyle(.introSubtitle.opacity(0.6))
                     Image(.forwardIcon)
