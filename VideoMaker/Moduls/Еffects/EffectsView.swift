@@ -67,7 +67,7 @@ struct EffectsView: View {
                 }
             }
             .padding(.horizontal, 16)
-            .padding(.top, 16 + 54)
+            .padding(.top, 70)
         }
     }
 }
