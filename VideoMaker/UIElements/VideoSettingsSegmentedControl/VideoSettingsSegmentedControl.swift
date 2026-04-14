@@ -5,6 +5,7 @@ struct VideoSettingsSegmentedControl<T>: View where T: CaseIterable & Identifiab
     
     @Binding var selection: T
     var title: String
+    var action: (T) -> Void
 
     var body: some View {
         VStack(spacing: 4) {
@@ -23,8 +24,8 @@ struct VideoSettingsSegmentedControl<T>: View where T: CaseIterable & Identifiab
                         title: title(for: item),
                         selected: item == selection
                     ) {
-                        withAnimation(.easeInOut(duration: 0.25)) {
-                            selection = item
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            action(item)
                         }
                     }
                 }

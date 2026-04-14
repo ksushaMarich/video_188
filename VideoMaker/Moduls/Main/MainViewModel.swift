@@ -8,6 +8,7 @@ final class MainViewModel: ObservableObject {
     
     @Published var isLoaded: Bool = false
     @Published var results: [LibraryItem] = []
+    @Published var isDeletePartPresented: Bool = false
 
     private var deletePartDismissWorkItem: DispatchWorkItem?
     private var latestImagesTask: Task<Void, Never>?
@@ -61,6 +62,25 @@ final class MainViewModel: ObservableObject {
         return LibraryItem(from: generatedVideo)
     }
     
+    func delete(context: NSManagedObjectContext, item: LibraryItem) {
+        let request: NSFetchRequest<GeneratedVideo> = GeneratedVideo.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", item.id as CVarArg)
+        request.fetchLimit = 1
+        
+        do {
+            if let object = try context.fetch(request).first {
+                context.delete(object)
+                
+                try context.save()
+                
+                fetchCD(context: context)
+                showDeletePart()
+            }
+        } catch {
+            print("Error deleting: \(error.localizedDescription)")
+        }
+    }
+    
     func resolvedVideoURL(for video: GeneratedVideo, context: NSManagedObjectContext) -> URL? {
         guard let storedURL = video.videoURL else { return nil }
         if FileManager.default.fileExists(atPath: storedURL.path) {
@@ -83,6 +103,13 @@ final class MainViewModel: ObservableObject {
             return fallbackURL
         }
         return nil
+    }
+    
+    func showDeletePart() {
+        isDeletePartPresented = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            self.isDeletePartPresented = false
+        }
     }
 }
 

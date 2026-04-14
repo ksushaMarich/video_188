@@ -83,7 +83,7 @@ final class VideoCreationViewModel: ObservableObject {
     var canGenerate: Bool {
         let hasPrompt = !promt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         let imageOk = generationMode == .textToVideo || selectedImage != nil
-        return hasPrompt && imageOk && GenerationLimitManager.shared.canAfford(price: price)
+        return hasPrompt && imageOk /*&& GenerationLimitManager.shared.canAfford(price: price)*/
     }
     
     @MainActor

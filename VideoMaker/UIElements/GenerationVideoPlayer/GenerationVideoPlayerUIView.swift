@@ -24,10 +24,28 @@ final class GenerationVideoPlayerUIView: UIView {
         playerLooper = AVPlayerLooper(player: player, templateItem: item)
 
         playerLayer.player = player
-        playerLayer.videoGravity = .resizeAspectFill
+        playerLayer.videoGravity = .resizeAspect
+
+        Task {
+            do {
+                let tracks = try await item.asset.loadTracks(withMediaType: .video)
+
+                if let track = tracks.first {
+                    let size = track.naturalSize.applying(track.preferredTransform)
+                    let fixedSize = CGSize(width: abs(size.width), height: abs(size.height))
+
+                    await MainActor.run {
+                        if fixedSize.width > 0, fixedSize.height > 0 {
+                            self.onVideoSize?(fixedSize)
+                        }
+                    }
+                }
+            } catch {
+                print("Failed to load tracks: \(error)")
+            }
+        }
 
         addTimeObserver()
-
         player.play()
     }
     

@@ -4,34 +4,37 @@ import AVFoundation
 
 struct GenerationVideoPlayer: View {
     let videoURL: URL
+    var shouldAddWatermark: Bool
     @State private var progress: Double = 0
     @State private var duration: Double = 1
     @State private var videoSize: CGSize?
     @State private var videoSizeHeight: CGFloat = 200
-    
-    struct VideoHeightKey: PreferenceKey {
-        static var defaultValue: CGFloat = 200
-        static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-            value = nextValue()
-        }
-    }
+    @State private var aspectRatio: CGFloat = 16.0/9.0
 
     var body: some View {
         ZStack(alignment: .bottom) {
             InnerPlayer(
                 videoURL: videoURL,
                 onVideoSize: { size in
-                    videoSize = size
+                    if size.width > 0 {
+                        aspectRatio = size.width / size.height
+                    }
                 },
-                onProgress: {  current, total in
+                onProgress: { current, total in
                     progress = current
                     duration = total
                 }
             )
-            .background(GeometryReader { geo in
-                Color.clear
-                    .preference(key: VideoHeightKey.self, value: geo.size.height)
-            })
+            .overlay(alignment: .bottomTrailing) {
+                if shouldAddWatermark {
+                    Image(.watermark)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(maxHeight: .infinity)
+                        .allowsHitTesting(false)
+                        .frame(alignment: .trailing)
+                }
+            }
             VStack(spacing: 0) {
                 Text("\(formatTime(progress)) / \(formatTime(duration))")
                     .font(CabinetGroteskFont.regular.of(size: 13))
@@ -53,10 +56,8 @@ struct GenerationVideoPlayer: View {
             }
             .padding(.horizontal, 16)
         }
-        .frame(height: videoSizeHeight)
-        .onPreferenceChange(VideoHeightKey.self) { newHeight in
-            videoSizeHeight = newHeight
-        }
+        .aspectRatio(aspectRatio, contentMode: .fit)
+        .frame(maxWidth: .infinity)
     }
     
     private func formatTime(_ time: Double) -> String {
