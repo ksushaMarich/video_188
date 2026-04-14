@@ -44,6 +44,5 @@ struct GenerationModeSwitcher1: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .background(.mainBackground)
     }
 }

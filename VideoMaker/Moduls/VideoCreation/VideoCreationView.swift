@@ -22,13 +22,21 @@ struct VideoCreationView: View {
     @State private var showAllUsed = false
     
     var body: some View {
-        ZStack {
-            VStack(spacing: 0) {
-                customToolBar
-                    .background(Color.mainBackground.ignoresSafeArea())
-                content
-            }
+        Group {
+            content
+                .background(
+                    Color.mainBackground
+                        .ignoresSafeArea()
+                )
         }
+        .overlay(alignment: .top, content: {
+            customToolBar
+                .background(
+                    BlurView(effect: .dark, intensity: 0.24)
+                        .ignoresSafeArea()
+                        .background(.mainBackground.opacity(0.8))
+                )
+        })
         .navigationDestination(isPresented: $showEffectView, destination: {
             EffectsView()
                 .environmentObject(viewModel)
@@ -125,6 +133,25 @@ struct VideoCreationView: View {
                 viewModel.generatedVideo = mainViewModel.create(context: context, videoURL: url, prompt: viewModel.promt, duration: viewModel.duration.rawValue, quality: viewModel.quality.rawValue, generationMode: viewModel.generationMode.rawValue, selectedTemplateId: viewModel.selectedEffect?.id, thumbnailImage: thumbnailImage)
             }
         }
+        .onAppear {
+            if let shouldUseSettingsFrom = mainViewModel.shouldUseSettingsFrom {
+                viewModel.duration = Duration(raw: shouldUseSettingsFrom.duration)
+                viewModel.quality = Quality(raw: shouldUseSettingsFrom.resolution)
+                viewModel.promt = shouldUseSettingsFrom.text
+                viewModel.selectedEffect = shouldUseSettingsFrom.selectedTemplate
+                mainViewModel.shouldUseSettingsFrom = nil
+            }
+        }
+        .onChange(of: mainViewModel.shouldUseSettingsFrom) { _, newValue in
+            guard let value = newValue else { return }
+            
+            viewModel.duration = Duration(raw: value.duration)
+            viewModel.quality = Quality(raw: value.resolution)
+            viewModel.promt = value.text
+            viewModel.selectedEffect = value.selectedTemplate
+            
+            mainViewModel.shouldUseSettingsFrom = nil
+        }
     }
     
     private var customToolBar: some View {
@@ -166,8 +193,8 @@ struct VideoCreationView: View {
                 generateButton
             }
             .padding(.horizontal, 16)
-            .padding(.vertical, 16)
-            .padding(.bottom, 48)
+            .padding(.bottom, 64)
+            .padding(.top, 104)
         }
         .scrollIndicators(.hidden)
     }

@@ -1,0 +1,55 @@
+{
+  "data": {
+    "results": [
+      {
+        "id": "cdbff548",
+        "json": null,
+        "screen": null,
+        "name": "paywall",
+        "identifier": "paywall",
+        "default": false,
+        "experiment_id": null,
+        "experiment_name": null,
+        "from_paywall": null,
+        "variation_identifier": null,
+        "variation_name": null,
+        "items_v2": [
+          {
+            "id": "cf57d1c2",
+            "item_id": "00717fc3-4cfa-4ad9-aaf3-98fba5ef62b1",
+            "name": "week 6.99",
+            "product_id": "creator_week",
+            "store": "app_store"
+          },
+          {
+            "id": "73b00262",
+            "item_id": "d65c84e4-f2d8-4987-b602-b8ab8e51f0d3",
+            "name": "week 6.99 trial",
+            "product_id": "creator_week_trial",
+            "store": "app_store"
+          }
+        ],
+        "items": [
+          {
+            "id": "cf57d1c2",
+            "item_id": "00717fc3-4cfa-4ad9-aaf3-98fba5ef62b1",
+            "name": "week 6.99",
+            "product_id": "creator_week",
+            "store": "app_store",
+            "properties": {}
+          },
+          {
+            "id": "73b00262",
+            "item_id": "d65c84e4-f2d8-4987-b602-b8ab8e51f0d3",
+            "name": "week 6.99 trial",
+            "product_id": "creator_week_trial",
+            "store": "app_store",
+            "properties": {}
+          }
+        ]
+      }
+    ],
+    "meta": null
+  },
+  "errors": null
+}

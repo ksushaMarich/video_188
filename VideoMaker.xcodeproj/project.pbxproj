@@ -348,10 +348,10 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = VideoMaker/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "";
+				INFOPLIST_KEY_CFBundleDisplayName = "AI Video Lab";
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Allowing access will let you take photos with the camera and use them as the first frame to generate a video";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Allowing access lets you use photos as the first frame for video generation and save finished videos to your Camera Roll";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Allow access to use photos as the first frame for video generation and to save finished videos to your Camera Roll";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -392,10 +392,10 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = VideoMaker/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "";
+				INFOPLIST_KEY_CFBundleDisplayName = "AI Video Lab";
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Allowing access will let you take photos with the camera and use them as the first frame to generate a video";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Allowing access lets you use photos as the first frame for video generation and save finished videos to your Camera Roll";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Allow access to use photos as the first frame for video generation and to save finished videos to your Camera Roll";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

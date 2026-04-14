@@ -43,6 +43,7 @@ struct LabView: View {
             Group {
                 if video.videoURL != nil {
                     VideoDetailsView(libraryItem: video)
+                        .environmentObject(mainTabViewModel)
                 }
             }
         }
@@ -85,7 +86,7 @@ struct LabView: View {
                     .font(CabinetGroteskFont.extrabold.of(size: 40))
                     .foregroundColor(.introSubtitle)
                 
-                Text("All your creations will\nbe gathered here")
+                Text("All your creations will appear here")
                     .font(CabinetGroteskFont.regular.of(size: 20))
                     .foregroundColor(.introSubtitle)
                     .multilineTextAlignment(.center)
