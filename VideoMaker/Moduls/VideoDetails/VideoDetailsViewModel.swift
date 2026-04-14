@@ -9,6 +9,7 @@ private let maxPromptLength = 2000
 
 @MainActor
 final class VideoDetailsViewModel: ObservableObject {
+    @Published var libraryItem: LibraryItem
     @Published var prompt = ""
     @Published var generationMode: GenerationMode = .textToVideo
     @Published var selectedTemplate: EffectType?
@@ -16,13 +17,14 @@ final class VideoDetailsViewModel: ObservableObject {
     @Published var quality: Quality = ._768
     @Published var duration: Duration = ._6
     @Published var generatedVideoURL: URL?
-    @Published var toast: GenerationToastKind?
+    @Published var isSuccessSeved: Bool?
     @Published var toastDismissTask: Task<Void, Never>?
 
     private let connectorLength = 3
 
 
     init(libraryItem: LibraryItem) {
+        self.libraryItem = libraryItem
         generatedVideoURL = libraryItem.videoURL
         selectedTemplate = libraryItem.selectedTemplate
         let limit = libraryItem.selectedTemplate
@@ -45,7 +47,7 @@ final class VideoDetailsViewModel: ObservableObject {
         guard let url = generatedVideoURL else { return }
         let granted = await PermissionService.shared.requestPhotoLibraryPermission()
         guard granted else {
-            await MainActor.run { toast = nil }
+            await MainActor.run { isSuccessSeved = nil }
             return
         }
         let startTime = Date()
@@ -53,6 +55,10 @@ final class VideoDetailsViewModel: ObservableObject {
             PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)
         } completionHandler: { success, error in
             Task { @MainActor in
+                if let error {
+                    self.isSuccessSeved = false
+                    self.scheduleToastDismiss()
+                }
                 if success {
                     let elapsed = Date().timeIntervalSince(startTime)
                     let remaining = max(0, 2.0 - elapsed)
@@ -60,7 +66,7 @@ final class VideoDetailsViewModel: ObservableObject {
                         try? await Task.sleep(for: .seconds(remaining))
                     }
                     if !Task.isCancelled {
-                        self.toast = .downloaded
+                        self.isSuccessSeved = true
                         self.scheduleToastDismiss()
                     }
                 }
@@ -71,9 +77,9 @@ final class VideoDetailsViewModel: ObservableObject {
     private func scheduleToastDismiss() {
         toastDismissTask?.cancel()
         toastDismissTask = Task { @MainActor in
-            try? await Task.sleep(for: .seconds(2))
+            try? await Task.sleep(for: .seconds(3))
             if !Task.isCancelled {
-                toast = nil
+                isSuccessSeved = nil
             }
         }
     }

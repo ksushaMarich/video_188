@@ -6,14 +6,17 @@ import Lottie
 
 struct VideoDetailsView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.managedObjectContext) var context
     @StateObject private var viewModel: VideoDetailsViewModel
     @State private var showActionsMenu = false
     @State private var shareItem: ShareItem?
     @EnvironmentObject private var purchaseManager: PurchaseManager
     @EnvironmentObject private var generationLimitManager: GenerationLimitManager
+    @EnvironmentObject var mainViewModel: MainViewModel
 
     @State private var showNotEnough = false
     @State private var showAllUsed = false
+    @State private var showDeleteAlert = false
 
     init(libraryItem: LibraryItem) {
         _viewModel = StateObject(wrappedValue: VideoDetailsViewModel(libraryItem: libraryItem))
@@ -27,72 +30,138 @@ struct VideoDetailsView: View {
                 Spacer()
             }
         }
+        .onTapGesture {
+            showActionsMenu = false
+        }
         .toolbar(.hidden, for: .navigationBar)
         .background(
             Color.mainBackground.ignoresSafeArea()
         )
-        .apply(actionsMenuOverlay)
-    }
-
-    private func actionsMenuOverlay(_ base: some View) -> some View {
-        base.overlay {
-            ZStack(alignment: .bottom) {
-                if showActionsMenu {
-                    Color.red
+        .sheet(item: $shareItem) { item in
+            ActivitySheetView(url: item.url) {
+                shareItem = nil
+            }
+            .presentationDetents([.medium, .large])
+        }
+        .overlay(alignment: .top) {
+            if showActionsMenu {
+                actionsMenuOverlay()
+                    .padding(.trailing, 68)
+                    .padding(.leading, 126)
+                    .padding(.top, 10)
+            }
+        }
+        .overlay {
+            if showDeleteAlert {
+                ZStack {
+                    BlurView(effect: .dark, intensity: 0.24)
                         .ignoresSafeArea()
-                        .onTapGesture {
-                            withAnimation(.easeInOut(duration: 0.25)) {
-                                showActionsMenu = false
-                            }
-                        }
-                        .transition(.opacity)
-                }
-                if showActionsMenu {
-                    VStack(spacing: 0) {
-                        Spacer(minLength: 0)
-                        ActionsMenu(
-                            onGenerateAgain: {
-                                print("generate")
-                            },
-                            onUsePrompt: {
-                                withAnimation(.easeInOut(duration: 0.25)) {
-                                    showActionsMenu = false
-                                }
-                                print("onUsePrompt")
-                            },
-                            onSaveToPhotos: {
-                                withAnimation(.easeInOut(duration: 0.25)) {
-                                    showActionsMenu = false
-                                }
-                                if purchaseManager.isSubscribed {
-                                    viewModel.saveVideoToPhotos()
-                                } else {
-                                    purchaseManager.isShowedPaywall = true
-                                }
-                            },
-                            onShare: {
-                                withAnimation(.easeInOut(duration: 0.25)) {
-                                    showActionsMenu = false
-                                }
-                                if purchaseManager.isSubscribed {
-                                    if let url = viewModel.generatedVideoURL {
-                                        shareItem = ShareItem(url: url)
-                                    }
-                                } else {
-                                    purchaseManager.isShowedPaywall = true
-                                }
-                            },
-                            onCancel: {
-                                withAnimation(.easeInOut(duration: 0.25)) {
-                                    showActionsMenu = false
-                                }
-                            })
-                    }
-                    .transition(.move(edge: .bottom))
+                        .background(.mainBackground.opacity(0.8))
+                    
+                    deleteAlert
                 }
             }
-            .animation(.easeInOut(duration: 0.25), value: showActionsMenu)
         }
+        .overlay(alignment: .top) {
+            if let isSuccessSeved = viewModel.isSuccessSeved {
+                makeToastView(isSuccess: isSuccessSeved)
+                    .padding(.top, 9)
+            }
+        }
+    }
+    
+    private var deleteAlert: some View {
+        VStack(spacing: 0) {
+            VStack(spacing: 9){
+                Text("Sure You Want\nTo Delete This Video?")
+                    .font(CabinetGroteskFont.bold.of(size: 17))
+                    .foregroundColor(.introSubtitle)
+                    .multilineTextAlignment(.center)
+                Text("This action cannot be undone")
+                    .font(CabinetGroteskFont.regular.of(size: 13))
+                    .foregroundColor(.introSubtitle)
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 19)
+            .padding(.bottom, 17)
+            Divider()
+            HStack(spacing: 1) {
+                Button {
+                    showDeleteAlert = false
+                } label: {
+                    Text("Cancel")
+                        .font(CabinetGroteskFont.medium.of(size: 16))
+                        .foregroundColor(.introSubtitle)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 10)
+                        .contentShape(Rectangle())
+                }
+                Divider()
+                Button {
+                    showDeleteAlert = false
+                    mainViewModel.delete(context: context, item: viewModel.libraryItem)
+                    dismiss()
+                    print("action")
+                } label: {
+                    Text("Delete")
+                        .font(CabinetGroteskFont.medium.of(size: 16))
+                        .foregroundColor(.accentDestructive)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 10)
+                        .contentShape(Rectangle())
+                }
+            }
+        }
+        .background(Color.segmentedBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 24))
+        .padding(.horizontal, 52.5)
+        .fixedSize(horizontal: false, vertical: true)
+    }
+
+    private func actionsMenuOverlay() -> some View {
+        VStack(spacing: 0) {
+            Button {
+                showActionsMenu = false
+                if purchaseManager.isSubscribed {
+                    viewModel.saveVideoToPhotos()
+                } else {
+                    purchaseManager.isShowedPaywall = true
+                }
+            } label: {
+                HStack {
+                    Text("Save")
+                        .font(CabinetGroteskFont.regular.of(size: 17))
+                        .foregroundColor(.introSubtitle)
+                    Spacer()
+                    Image(.saveIcon)
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                }
+                .padding(.leading, 16)
+                .padding(.trailing, 10)
+                .padding(.vertical, 10)
+            }
+            Divider()
+            Button {
+                showActionsMenu = false
+                showDeleteAlert = true
+            } label: {
+                HStack {
+                    Text("Delete")
+                        .font(CabinetGroteskFont.regular.of(size: 17))
+                        .foregroundColor(.accentDestructive)
+                    Spacer()
+                    Image(.redTrashIcon)
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                }
+                .padding(.leading, 16)
+                .padding(.trailing, 10)
+                .padding(.vertical, 10)
+            }
+        }
+        .background(.segmentedBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
     @ViewBuilder
@@ -123,8 +192,13 @@ struct VideoDetailsView: View {
                                 .contentShape(Rectangle())
                         }
                         Button {
-                            withAnimation(.easeInOut(duration: 0.25)) {
-                                showActionsMenu = true
+                            showActionsMenu = false
+                            if purchaseManager.isSubscribed {
+                                if let url = viewModel.generatedVideoURL {
+                                    shareItem = ShareItem(url: url)
+                                }
+                            } else {
+                                purchaseManager.isShowedPaywall = true
                             }
                         } label: {
                             Image(.shareIcon)
@@ -134,10 +208,6 @@ struct VideoDetailsView: View {
                                 .contentShape(Rectangle())
                         }
                     }
-                }
-                if let kind = viewModel.toast  {
-                    makeToastView(for: kind)
-                        .transition(.opacity)
                 }
             }
         }
@@ -153,41 +223,25 @@ struct VideoDetailsView: View {
     }
 
     @ViewBuilder
-    private func makeToastView(for kind: GenerationToastKind) -> some View {
+    private func makeToastView(isSuccess: Bool) -> some View {
         Group {
             HStack(spacing: 8) {
-                switch kind {
-                case .downloaded, .deleted:
-                    HStack(spacing: 0) {
-                        Image(kind == .deleted ? .trashIcon : .checkmarkIcon)
-                            .resizable()
-                            .frame(width: 24, height: 24)
-                        Text(kind == .deleted ? "Video Deleted" : "Saved")
-                            .font(CabinetGroteskFont.medium.of(size: 15))
-                            .foregroundColor(.introSubtitle)
-                    }
-                    .background {
-                        BlurView(effect: .dark, intensity: 0.16)
-                            .ignoresSafeArea()
-                            .background(Color.introSubtitle.opacity(0.2))
-                    }
-                case .failed:
-                    HStack(spacing: 0) {
-                        Image(.crossIcon)
-                            .resizable()
-                            .frame(width: 24, height: 24)
-                        Text("Saving Failed")
-                            .font(CabinetGroteskFont.medium.of(size: 15))
-                            .foregroundColor(.red)
-                    }
-                }
+                Image(isSuccess ? .checkmarkIcon : .crossIcon)
+                    .resizable()
+                    .frame(width: 24, height: 24)
+                    .padding(.vertical, 12)
+                    .padding(.leading, 12)
+                Text(isSuccess ? "Saved" : "Saving Failed")
+                    .font(CabinetGroteskFont.medium.of(size: 15))
+                    .foregroundColor( isSuccess ? .introSubtitle : .accentDestructive)
+                    .padding(.trailing, 16)
             }
-            .clipShape(
-                RoundedRectangle(cornerRadius: 16)
+            .background(
+                BlurView(effect: .dark, intensity: 0.4)
+                    .background(isSuccess ? .introSubtitle.opacity(0.2) : .accentDestructive.opacity(0.2))
             )
+            .clipShape(RoundedRectangle(cornerRadius: 100))
         }
-        .opacity(viewModel.toast != nil ? 1 : 0)
-        .padding(.top, 8)
     }
 
     @ViewBuilder
@@ -196,7 +250,7 @@ struct VideoDetailsView: View {
             VStack(spacing: 8) {
                 if let url = viewModel.generatedVideoURL {
                     GenerationVideoPlayer (
-                        videoURL: url )
+                        videoURL: url, shouldAddWatermark: !purchaseManager.isSubscribed )
                         .frame(maxWidth: .infinity)
                 }
                 HStack(spacing: 8) {
@@ -267,4 +321,19 @@ struct VideoDetailsView: View {
 private struct ShareItem: Identifiable {
     let id = UUID()
     let url: URL
+}
+
+private struct ActivitySheetView: UIViewControllerRepresentable {
+    let url: URL
+    var onDismiss: (() -> Void)?
+
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        let vc = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        vc.completionWithItemsHandler = { _, _, _, _ in
+            onDismiss?()
+        }
+        return vc
+    }
+
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }

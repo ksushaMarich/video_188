@@ -64,10 +64,10 @@ final class PermissionService: ObservableObject {
             message: permission.alertMessage,
             preferredStyle: .alert)
 
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel) { _ in
+        alert.addAction(UIAlertAction(title: "Cancel", style: .default) { _ in
             self.isAlertVisible = false
         })
-        alert.addAction(UIAlertAction(title: "Settings", style: .default) { _ in
+        alert.addAction(UIAlertAction(title: "Settings", style: .cancel) { _ in
             self.isAlertVisible = false
             self.openAppSettings()
         })

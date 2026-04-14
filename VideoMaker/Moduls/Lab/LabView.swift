@@ -46,6 +46,12 @@ struct LabView: View {
                 }
             }
         }
+        .overlay(alignment: .top) {
+            if mainViewModel.isDeletePartPresented {
+                deletePart
+                    .padding(.top, 9)
+            }
+        }
     }
 
     @ViewBuilder
@@ -108,5 +114,24 @@ struct LabView: View {
             }
         }
         .padding(.horizontal, 24)
+    }
+    
+    private var deletePart: some View {
+        HStack(spacing: 8) {
+            Image(.trashIcon)
+                .resizable()
+                .frame(width: 24, height: 24)
+                .padding(.vertical, 12)
+                .padding(.leading, 12)
+            Text("Video Deleted")
+                .font(CabinetGroteskFont.medium.of(size: 15))
+                .foregroundColor(.introSubtitle)
+                .padding(.trailing, 16)
+        }
+        .background(
+            BlurView(effect: .dark, intensity: 0.4)
+                .background(.introSubtitle.opacity(0.2))
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 100))
     }
 }

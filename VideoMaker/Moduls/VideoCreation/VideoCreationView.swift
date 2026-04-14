@@ -49,7 +49,30 @@ struct VideoCreationView: View {
                 }
             }
         }
-        
+        .fullScreenCover(isPresented: $isImageInvalid) {
+            if isImageInvalid {
+                ImageTooLargeView(
+                    fromPhotos: {
+                        isImageInvalid = false
+                        Task {
+                            if await PermissionService.shared.requestPhotoLibraryPermission() {
+                                showImagePicker = true
+                            }
+                        }
+                    },
+                    newImage: {
+                        isImageInvalid = false
+                        Task {
+                            if await PermissionService.shared.requestCameraUsageAccess() {
+                                showCamera = true
+                            }
+                        }
+                    },
+                    cancel: {
+                        isImageInvalid = false
+                    })
+            }
+        }
         .fullScreenCover(isPresented: $showCamera) {
             CameraPicker { image in
                 if viewModel.isValidSize(data: nil, image: image) {
@@ -66,6 +89,15 @@ struct VideoCreationView: View {
             }
             .background(.black)
         }
+        .fullScreenCover(isPresented: $showAllUsed, content: {
+            AllUsedView()
+                .background(TransparentBackground())
+        })
+        .fullScreenCover(isPresented: $showNotEnough, content: {
+            NotEnoughView()
+                .background(TransparentBackground())
+                .environmentObject(viewModel)
+        })
         .fullScreenCover(isPresented: $showGalleryOrCamera) {
             galleryOrCameraView
                 .background(TransparentBackground())
@@ -89,9 +121,8 @@ struct VideoCreationView: View {
         }
         .onChange(of: viewModel.generatedVideoURL) { _, newValue in
             guard let url = newValue else { return }
-            
             viewModel.generateThumbnail(from: url) { thumbnailImage in
-                viewModel.generatedVideo = mainViewModel.create(context: context, videoURL: url, prompt: viewModel.promt, duration: viewModel.duration.rawValue, quality: viewModel.duration.rawValue, generationMode: viewModel.generationMode.rawValue, selectedTemplateId: viewModel.selectedEffect?.id, thumbnailImage: thumbnailImage)
+                viewModel.generatedVideo = mainViewModel.create(context: context, videoURL: url, prompt: viewModel.promt, duration: viewModel.duration.rawValue, quality: viewModel.quality.rawValue, generationMode: viewModel.generationMode.rawValue, selectedTemplateId: viewModel.selectedEffect?.id, thumbnailImage: thumbnailImage)
             }
         }
     }
@@ -300,8 +331,20 @@ struct VideoCreationView: View {
             }
             .padding(.vertical, 10)
             HStack(spacing: 8) {
-                VideoSettingsSegmentedControl(selection: $viewModel.duration, title: "Duration")
-                VideoSettingsSegmentedControl(selection: $viewModel.quality, title: "Resolution")
+                VideoSettingsSegmentedControl(selection: $viewModel.duration, title: "Duration") { item in
+                    if purchaseManager.isSubscribed {
+                        viewModel.duration = item
+                    } else {
+                        purchaseManager.isShowedPaywall = true
+                    }
+                }
+                VideoSettingsSegmentedControl(selection: $viewModel.quality, title: "Resolution") { item in
+                    if purchaseManager.isSubscribed {
+                        viewModel.quality = item
+                    } else {
+                        purchaseManager.isShowedPaywall = true
+                    }
+                }
             }
         }
     }

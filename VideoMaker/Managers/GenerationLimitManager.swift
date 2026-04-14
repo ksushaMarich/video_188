@@ -2,7 +2,7 @@ import Foundation
 import Combine
 
 private let weeklyLimit = 10
-private let trialLimit = 1
+private let trialLimit = 2
 private let periodDays = 7
 private let keySubscriptionStart = "generationLimitSubscriptionStart"
 private let keyPeriodIndex = "generationLimitPeriodIndex"
