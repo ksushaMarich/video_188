@@ -26,7 +26,6 @@ final class GenerationVideoPlayerUIView: UIView {
         playerLayer.player = player
         playerLayer.videoGravity = .resizeAspect
 
-        // 👉 вот это важно
         Task {
             do {
                 let tracks = try await item.asset.loadTracks(withMediaType: .video)
