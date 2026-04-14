@@ -110,7 +110,7 @@ struct PaywallView: View {
     @ViewBuilder
     private func subscriptionText() -> some View {
 
-        VStack(alignment: .center, spacing: 4) {
+        VStack(alignment: .center, spacing: 0) {
             Text(isTrialEnabled ? "Subscribe to unlock all the features\nfor just \(purchaseManager.trialProduct.fullPrice)" : "Subscribe to unlock all the\nfeatures for just \(purchaseManager.nonTrialProduct.fullPrice)")
                 .foregroundColor(.introSubtitle)
                 .font(CabinetGroteskFont.regular.of(size: 17))

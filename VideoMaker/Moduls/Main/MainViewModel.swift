@@ -9,6 +9,7 @@ final class MainViewModel: ObservableObject {
     @Published var isLoaded: Bool = false
     @Published var results: [LibraryItem] = []
     @Published var isDeletePartPresented: Bool = false
+    @Published var shouldUseSettingsFrom: LibraryItem? = nil
 
     private var deletePartDismissWorkItem: DispatchWorkItem?
     private var latestImagesTask: Task<Void, Never>?

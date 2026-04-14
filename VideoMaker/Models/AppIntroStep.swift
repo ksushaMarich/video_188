@@ -22,7 +22,7 @@ enum AppIntroStep: Int, CaseIterable {
             case .first:
                 return "Unlock your creative potential\nwith the power of AI"
             case .second:
-                return "Find out why our app receives such\nhigh praise from users"
+                return "Discover why our users give\nus such high ratings"
             case .third:
                 return "Explore tons of effects designed to\nperfectly match your vibe and style"
             case .paywall:

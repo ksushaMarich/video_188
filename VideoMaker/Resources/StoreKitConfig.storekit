@@ -71,9 +71,9 @@
               "locale" : "en_US"
             }
           ],
-          "productID" : "week_4.99",
+          "productID" : "creator_week",
           "recurringSubscriptionPeriod" : "P1W",
-          "referenceName" : "week",
+          "referenceName" : "creator_week",
           "subscriptionGroupID" : "FB8EC713",
           "type" : "RecurringSubscription",
           "winbackOffers" : [
@@ -103,9 +103,9 @@
               "locale" : "en_US"
             }
           ],
-          "productID" : "week_4.99_trial",
+          "productID" : "creator_week_trial",
           "recurringSubscriptionPeriod" : "P1W",
-          "referenceName" : "week_trial",
+          "referenceName" : "creator_week_trial",
           "subscriptionGroupID" : "FB8EC713",
           "type" : "RecurringSubscription",
           "winbackOffers" : [

@@ -53,7 +53,7 @@ struct OnboardingPaywallView: View {
     @ViewBuilder
     private var contentPanel: some View {
         VStack(alignment: .center, spacing: 24) {
-            VStack(alignment: .center, spacing: 45) {
+            VStack(alignment: .center, spacing: 20) {
                 VStack(spacing: 16) {
                     Text("Full Power With\nPremium Features")
                         .font(CabinetGroteskFont.extrabold.of(size: 40))
@@ -109,8 +109,8 @@ struct OnboardingPaywallView: View {
             ? purchaseManager.trialProduct.fullPrice
             : purchaseManager.nonTrialProduct.fullPrice
 
-        VStack(alignment: .leading, spacing: 4) {
-            Text("Subscribe to unlock all the features\nfor just \(price)")
+        VStack(spacing: 0) {
+            Text(isTrialEnabled ? "Subscribe to unlock all the features\nfor just \(price)" : "Subscribe to unlock all the\nfeatures for just \(price)")
                 .foregroundColor(.introSubtitle)
                 .font(CabinetGroteskFont.regular.of(size: 17))
 
@@ -124,8 +124,8 @@ struct OnboardingPaywallView: View {
             }
             .disabled(isLoading)
         }
-        .multilineTextAlignment(.leading)
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .multilineTextAlignment(.center)
+        .frame(maxWidth: .infinity)
         .fixedSize(horizontal: false, vertical: true)
     }
 

@@ -49,6 +49,18 @@ final class GenerationVideoPlayerUIView: UIView {
         player.play()
     }
     
+    func play() {
+        player.play()
+    }
+
+    func pause() {
+        player.pause()
+    }
+
+    func seekToStart() {
+        player.seek(to: .zero)
+    }
+    
     private func addTimeObserver() {
         let interval = CMTime(seconds: 0.3, preferredTimescale: 600)
 
@@ -72,6 +84,8 @@ final class GenerationVideoPlayerUIView: UIView {
 
 struct InnerPlayer: UIViewRepresentable {
     let videoURL: URL
+    let restartTrigger: Bool
+
     var onVideoSize: (CGSize) -> Void
     var onProgress: (Double, Double) -> Void
 
@@ -80,8 +94,38 @@ struct InnerPlayer: UIViewRepresentable {
         view.onVideoSize = onVideoSize
         view.onProgress = onProgress
         view.configure(url: videoURL)
+        view.play()
         return view
     }
 
-    func updateUIView(_ uiView: GenerationVideoPlayerUIView, context: Context) {}
+    func updateUIView(_ uiView: GenerationVideoPlayerUIView, context: Context) {
+        context.coordinator.handle(
+            uiView: uiView,
+            url: videoURL,
+            restartTrigger: restartTrigger
+        )
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator()
+    }
+
+    class Coordinator {
+        private var lastRestartState: Bool?
+
+        func handle(uiView: GenerationVideoPlayerUIView,
+                    url: URL,
+                    restartTrigger: Bool) {
+
+            // если первый запуск или изменился триггер
+            if lastRestartState == nil || lastRestartState != restartTrigger {
+
+                uiView.configure(url: url)
+                uiView.seekToStart()
+                uiView.play()
+
+                lastRestartState = restartTrigger
+            }
+        }
+    }
 }

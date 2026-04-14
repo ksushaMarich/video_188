@@ -11,12 +11,16 @@ struct VideoDetailsView: View {
     @State private var showActionsMenu = false
     @State private var shareItem: ShareItem?
     @EnvironmentObject private var purchaseManager: PurchaseManager
+    @EnvironmentObject private var mainTabViewModel: MainTabViewModel
     @EnvironmentObject private var generationLimitManager: GenerationLimitManager
     @EnvironmentObject var mainViewModel: MainViewModel
+    @AppStorage("hasGeneratedAfterSubscription") private var hasGeneratedAfterSubscription: Bool = false
 
     @State private var showNotEnough = false
     @State private var showAllUsed = false
     @State private var showDeleteAlert = false
+    @State private var showFeedbackAlert = false
+    @State private var showGoToStoreAlert = false
 
     init(libraryItem: LibraryItem) {
         _viewModel = StateObject(wrappedValue: VideoDetailsViewModel(libraryItem: libraryItem))
@@ -43,6 +47,22 @@ struct VideoDetailsView: View {
             }
             .presentationDetents([.medium, .large])
         }
+        .alert("Do You Like The App?", isPresented: $showFeedbackAlert) {
+            Button("No") {}
+            Button("Yes") {
+                showGoToStoreAlert = true
+            }
+        } message: {
+            Text("We appreciate your feedback")
+        }
+        .alert("Please Leave a Review", isPresented: $showGoToStoreAlert) {
+            Button("Go to the App Store", role: .cancel) {
+                guard let url = URL(string: AppConfig.Links.review) else { return }
+                UIApplication.shared.open(url)
+            }
+        } message: {
+            Text("Positive reviews are a powerful motivation for us to excel")
+        }
         .overlay(alignment: .top) {
             if showActionsMenu {
                 actionsMenuOverlay()
@@ -66,6 +86,12 @@ struct VideoDetailsView: View {
             if let isSuccessSeved = viewModel.isSuccessSeved {
                 makeToastView(isSuccess: isSuccessSeved)
                     .padding(.top, 9)
+            }
+        }
+        .onAppear {
+            if purchaseManager.isSubscribed, !hasGeneratedAfterSubscription {
+                showFeedbackAlert = true
+                hasGeneratedAfterSubscription = true
             }
         }
     }
@@ -312,6 +338,34 @@ struct VideoDetailsView: View {
                     .background(.introSubtitle.opacity(0.2))
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                     .padding(.horizontal, 16)
+                
+                Button {
+                    mainViewModel.shouldUseSettingsFrom = viewModel.libraryItem
+                    dismiss()
+                    mainTabViewModel.selectedTab = .main
+                } label: {
+                    HStack(spacing: 0) {
+                        Text("Use These Settings")
+                            .font(CabinetGroteskFont.bold.of(size: 16))
+                            .foregroundColor(.mainBackground)
+                        Spacer()
+                        Text((viewModel.duration == ._10 || viewModel.quality == ._1080) ? "3" : "1")
+                            .foregroundColor( .textBlack)
+                            .font(CabinetGroteskFont.bold.of(size: 16))
+                        Image(.lightningIcon)
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                    }
+                    .padding(.vertical, 12)
+                    .padding(.horizontal, 12)
+                    .frame(maxWidth: .infinity)
+                    .background(
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(.introAccentSecondary))
+                    .contentShape(RoundedRectangle(cornerRadius: 8))
+                }
+                .padding(.top, 16)
+                .padding(.horizontal, 16)
             }
             .padding(.top, 72)
         }

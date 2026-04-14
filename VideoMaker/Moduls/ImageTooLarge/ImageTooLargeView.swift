@@ -14,7 +14,7 @@ struct ImageTooLargeView: View {
                     Text("Image Is Too Large")
                         .font(CabinetGroteskFont.bold.of(size: 17))
                         .foregroundStyle(.introSubtitle)
-                    Text("Pick an image less than 20 MB")
+                    Text("Pick an image smaller than 20 MB")
                         .font(CabinetGroteskFont.regular.of(size: 13))
                         .foregroundStyle(.introSubtitle)
                 }

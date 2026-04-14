@@ -16,10 +16,6 @@ struct MainTabView: View {
                     }
                 }
             }
-            .background(
-                Color.mainBackground
-                    .ignoresSafeArea()
-            )
             .ignoresSafeArea(.keyboard)
         }
     }

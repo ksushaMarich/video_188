@@ -5,16 +5,18 @@ import AVFoundation
 struct GenerationVideoPlayer: View {
     let videoURL: URL
     var shouldAddWatermark: Bool
+    @Environment(\.scenePhase) private var scenePhase
     @State private var progress: Double = 0
     @State private var duration: Double = 1
     @State private var videoSize: CGSize?
     @State private var videoSizeHeight: CGFloat = 200
     @State private var aspectRatio: CGFloat = 16.0/9.0
+    @State private var restartTrigger = false
 
     var body: some View {
         ZStack(alignment: .bottom) {
             InnerPlayer(
-                videoURL: videoURL,
+                videoURL: videoURL, restartTrigger: restartTrigger,
                 onVideoSize: { size in
                     if size.width > 0 {
                         aspectRatio = size.width / size.height
@@ -58,6 +60,11 @@ struct GenerationVideoPlayer: View {
         }
         .aspectRatio(aspectRatio, contentMode: .fit)
         .frame(maxWidth: .infinity)
+        .onChange(of: scenePhase) {
+            if scenePhase == .active {
+                restartTrigger.toggle()
+            }
+        }
     }
     
     private func formatTime(_ time: Double) -> String {
