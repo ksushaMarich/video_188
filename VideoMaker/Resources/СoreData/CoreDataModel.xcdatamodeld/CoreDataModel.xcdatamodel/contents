@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24512" systemVersion="24G231" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+    <entity name="GeneratedVideo" representedClassName="GeneratedVideo" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="duration" attributeType="String"/>
+        <attribute name="generationMode" attributeType="String"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="prompt" attributeType="String"/>
+        <attribute name="quality" attributeType="String"/>
+        <attribute name="selectedTemplateId" optional="YES" attributeType="String"/>
+        <attribute name="sourceImageData" optional="YES" attributeType="Binary"/>
+        <attribute name="thumbnailData" optional="YES" attributeType="Binary"/>
+        <attribute name="videoURL" attributeType="URI"/>
+    </entity>
+</model>
