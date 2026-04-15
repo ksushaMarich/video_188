@@ -55,32 +55,6 @@ final class PermissionService: ObservableObject {
         let status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
         return status == .authorized || status == .limited
     }
-
-//    private func showSettingsAlert(for permission: PermissionType) {
-//        guard !isAlertVisible else { return }
-//        isAlertVisible = true
-//
-//        guard let topVC = topViewController() else {
-//            isAlertVisible = false
-//            return
-//        }
-//
-//        let alert = UIAlertController(
-//            title: permission.alertTitle,
-//            message: permission.alertMessage,
-//            preferredStyle: .alert)
-//
-//        alert.addAction(UIAlertAction(title: "Cancel", style: .default) { _ in
-//            self.isAlertVisible = false
-//        })
-//        
-//        alert.addAction(UIAlertAction(title: "Settings", style: .cancel) { _ in
-//            self.isAlertVisible = false
-//            self.openAppSettings()
-//        })
-//
-//        topVC.present(alert, animated: true)
-//    }
     
     // Camera
     
@@ -93,6 +67,7 @@ final class PermissionService: ObservableObject {
 
         if currentStatus == .denied || currentStatus == .restricted {
             Task { @MainActor in
+                
                 alertType = .camera
                 showAlert = true
             }
@@ -115,25 +90,4 @@ final class PermissionService: ObservableObject {
         }
         return false
     }
-
-//    private func topViewController(base: UIViewController? = UIApplication.shared
-//        .connectedScenes
-//        .compactMap { ($0 as? UIWindowScene)?.keyWindow }
-//        .first?
-//        .rootViewController) -> UIViewController?
-//    {
-//        if let nav = base as? UINavigationController {
-//            return topViewController(base: nav.visibleViewController)
-//        }
-//
-//        if let tab = base as? UITabBarController {
-//            return topViewController(base: tab.selectedViewController)
-//        }
-//
-//        if let presented = base?.presentedViewController {
-//            return topViewController(base: presented)
-//        }
-//
-//        return base
-//    }
 }

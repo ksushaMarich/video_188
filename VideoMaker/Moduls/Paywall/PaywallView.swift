@@ -7,6 +7,7 @@ struct PaywallView: View {
     @EnvironmentObject private var purchaseManager: PurchaseManager
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
+
     @State private var isTrialEnabled = true
     @State private var isLoading = false
     

@@ -8,7 +8,6 @@ struct VideoCreationView: View {
     @EnvironmentObject var purchaseManager: PurchaseManager
     @EnvironmentObject var mainViewModel: MainViewModel
     @EnvironmentObject private var generationLimitManager: GenerationLimitManager
-    
     @AppStorage("hasGeneratedAfterSubscription") private var hasGeneratedAfterSubscription: Bool = false
     @StateObject private var permissionService = PermissionService.shared
     @FocusState private var isPromptFocused: Bool

@@ -6,6 +6,7 @@ import ApphudBase
 struct OnboardingPaywallView: View {
     @EnvironmentObject private var purchaseManager: PurchaseManager
     @Environment(\.openURL) private var openURL
+    
     @State private var isTrialEnabled = true
     @State private var isLoading = false
     
@@ -138,6 +139,7 @@ struct OnboardingPaywallView: View {
                 : purchaseManager.nonTrialProduct)
         { success in
             GenerationLimitManager.shared.refresh(isSubscribed: purchaseManager.isSubscribed)
+            
             isLoading = false
             purchaseManager.hasSeenOnBoarding = success
         }

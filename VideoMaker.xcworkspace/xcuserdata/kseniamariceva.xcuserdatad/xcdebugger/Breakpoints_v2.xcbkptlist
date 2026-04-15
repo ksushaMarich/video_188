@@ -7,22 +7,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "7B3DF671-5B3D-4202-A1DA-202892476593"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "VideoMaker/Managers/PermissionService.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "91"
-            endingLineNumber = "91"
-            landmarkName = "requestCameraUsageAccess()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "EAAC8AA7-F3A2-488C-9A2F-8E69E94FF8E1"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -30,10 +14,10 @@
             filePath = "VideoMaker/Managers/PermissionService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "64"
-            endingLineNumber = "64"
-            landmarkName = "PermissionService"
-            landmarkType = "3">
+            startingLineNumber = "45"
+            endingLineNumber = "45"
+            landmarkName = "requestPhotoLibraryPermissionFromSystem()"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -46,10 +30,10 @@
             filePath = "VideoMaker/Managers/PermissionService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "61"
-            endingLineNumber = "61"
-            landmarkName = "PermissionService"
-            landmarkType = "3">
+            startingLineNumber = "42"
+            endingLineNumber = "42"
+            landmarkName = "requestPhotoLibraryPermissionFromSystem()"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -62,10 +46,40 @@
             filePath = "VideoMaker/Managers/PermissionService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "60"
-            endingLineNumber = "60"
-            landmarkName = "PermissionService"
-            landmarkType = "3">
+            startingLineNumber = "41"
+            endingLineNumber = "41"
+            landmarkName = "requestPhotoLibraryPermissionFromSystem()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "25FFC47B-1D95-4FC0-93D6-8A616CCA0687 - e1e121d3ae6be63e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Swift.CheckedContinuation&lt;Swift.Bool, Swift.Never&gt;) -&gt; () in VideoMaker.PermissionService.requestPhotoLibraryPermissionFromSystem() async -&gt; Swift.Bool"
+                  moduleName = "VideoMaker.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/kseniamariceva/Downloads/video_188(%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%81%D1%82%D0%BE%D0%B2)-with-submodules/VideoMaker/Managers/PermissionService.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "41"
+                  endingLineNumber = "41">
+               </Location>
+               <Location
+                  uuid = "25FFC47B-1D95-4FC0-93D6-8A616CCA0687 - 7a669c3a4456df30"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 @Sendable (__C.PHAuthorizationStatus) -&gt; () in closure #1 (Swift.CheckedContinuation&lt;Swift.Bool, Swift.Never&gt;) -&gt; () in VideoMaker.PermissionService.requestPhotoLibraryPermissionFromSystem() async -&gt; Swift.Bool"
+                  moduleName = "VideoMaker.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/kseniamariceva/Downloads/video_188(%D0%B4%D0%BB%D1%8F%20%D1%82%D0%B5%D1%81%D1%82%D0%BE%D0%B2)-with-submodules/VideoMaker/Managers/PermissionService.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "42"
+                  endingLineNumber = "42">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -78,10 +92,10 @@
             filePath = "VideoMaker/Managers/PermissionService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "82"
-            endingLineNumber = "82"
-            landmarkName = "PermissionService"
-            landmarkType = "3">
+            startingLineNumber = "56"
+            endingLineNumber = "56"
+            landmarkName = "checkPhotoLibraryPermission()"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
