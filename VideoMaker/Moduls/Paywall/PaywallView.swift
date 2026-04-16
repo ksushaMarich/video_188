@@ -141,7 +141,6 @@ struct PaywallView: View {
         { success in
             isLoading = false
             if success {
-                GenerationLimitManager.shared.refresh(isSubscribed: purchaseManager.isSubscribed)
                 DispatchQueue.main.async {
                     dismiss()
                 }

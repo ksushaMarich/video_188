@@ -46,6 +46,9 @@ final class PurchaseManager: ObservableObject {
         Task { @MainActor in
             let result = await Apphud.fallbackPurchase(product: product)
             self.isSubscribed = result
+            if result {
+                GenerationLimitManager.shared.refresh(isSubscribed: true)
+            }
             completion(result)
         }
     }
@@ -54,6 +57,9 @@ final class PurchaseManager: ObservableObject {
         Task { @MainActor in
             let result = await Apphud.fallbackRestore()
             self.isSubscribed = result
+            if result {
+                GenerationLimitManager.shared.refresh(isSubscribed: true)
+            }
             completion(result)
             return
         }

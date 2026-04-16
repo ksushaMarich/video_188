@@ -138,8 +138,6 @@ struct OnboardingPaywallView: View {
                 ? purchaseManager.trialProduct
                 : purchaseManager.nonTrialProduct)
         { success in
-            GenerationLimitManager.shared.refresh(isSubscribed: purchaseManager.isSubscribed)
-            
             isLoading = false
             purchaseManager.hasSeenOnBoarding = success
         }

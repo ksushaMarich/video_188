@@ -4,6 +4,7 @@ import SwiftUI
 struct VideoCreationView: View {
     @StateObject private var viewModel = VideoCreationViewModel()
     @Environment(\.managedObjectContext) var context
+    @Environment(\.openURL) private var openURL
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var purchaseManager: PurchaseManager
     @EnvironmentObject var mainViewModel: MainViewModel
@@ -170,7 +171,9 @@ struct VideoCreationView: View {
             Button("Cancel") { }
             
             Button(action: {
-                viewModel.openAppSettings()
+                guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else { return }
+                openURL(settingsUrl)
+
             }) {
                 Text("Settings")
                     .fontWeight(.bold)

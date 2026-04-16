@@ -7,6 +7,7 @@ import Lottie
 struct VideoDetailsView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.managedObjectContext) var context
+    @Environment(\.openURL) private var openURL
     @StateObject private var viewModel: VideoDetailsViewModel
     @State private var showActionsMenu = false
     @State private var shareItem: ShareItem?
@@ -56,7 +57,7 @@ struct VideoDetailsView: View {
         .alert("Please Leave a Review", isPresented: $showGoToStoreAlert) {
             Button("Go to the App Store", role: .cancel) {
                 guard let url = URL(string: AppConfig.Links.review) else { return }
-                UIApplication.shared.open(url)
+                openURL(url)
             }
         } message: {
             Text("Positive reviews are a powerful motivation for us to excel")
