@@ -1,7 +1,7 @@
 import Foundation
 import Combine
 
-private let weeklyLimit = 10
+private let weeklyLimit = 25
 private let trialLimit = 1
 private let periodDays = 7
 private let keySubscriptionStart = "generationLimitSubscriptionStart"
@@ -22,7 +22,7 @@ final class GenerationLimitManager: ObservableObject {
     private let calendar = Calendar.current
 
     private init() {
-        refresh(isSubscribed: false)
+        refresh(isSubscribed: PurchaseManager.shared.isSubscribed)
     }
 
     func refresh(isSubscribed: Bool) {

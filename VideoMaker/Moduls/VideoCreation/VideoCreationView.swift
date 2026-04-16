@@ -4,11 +4,13 @@ import SwiftUI
 struct VideoCreationView: View {
     @StateObject private var viewModel = VideoCreationViewModel()
     @Environment(\.managedObjectContext) var context
+    @Environment(\.openURL) private var openURL
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var purchaseManager: PurchaseManager
     @EnvironmentObject var mainViewModel: MainViewModel
     @EnvironmentObject private var generationLimitManager: GenerationLimitManager
-    
+    @AppStorage("hasGeneratedAfterSubscription") private var hasGeneratedAfterSubscription: Bool = false
+    @StateObject private var permissionService = PermissionService.shared
     @FocusState private var isPromptFocused: Bool
     @State private var showImagePicker = false
     @State private var showCamera = false
@@ -56,6 +58,7 @@ struct VideoCreationView: View {
                     isImageInvalid = true
                 }
             }
+            .ignoresSafeArea()
         }
         .fullScreenCover(isPresented: $isImageInvalid) {
             if isImageInvalid {
@@ -130,7 +133,7 @@ struct VideoCreationView: View {
         .onChange(of: viewModel.generatedVideoURL) { _, newValue in
             guard let url = newValue else { return }
             viewModel.generateThumbnail(from: url) { thumbnailImage in
-                viewModel.generatedVideo = mainViewModel.create(context: context, videoURL: url, prompt: viewModel.promt, duration: viewModel.duration.rawValue, quality: viewModel.quality.rawValue, generationMode: viewModel.generationMode.rawValue, selectedTemplateId: viewModel.selectedEffect?.id, thumbnailImage: thumbnailImage)
+                viewModel.generatedVideo = mainViewModel.create(context: context, videoURL: url, prompt: viewModel.promt, duration: viewModel.duration.rawValue, quality: viewModel.quality.rawValue, generationMode: viewModel.generationMode.rawValue, selectedTemplateId: viewModel.selectedEffect?.id, thumbnailImage: thumbnailImage, sourceImage: viewModel.selectedImage)
             }
         }
         .onAppear {
@@ -139,18 +142,45 @@ struct VideoCreationView: View {
                 viewModel.quality = Quality(raw: shouldUseSettingsFrom.resolution)
                 viewModel.promt = shouldUseSettingsFrom.text
                 viewModel.selectedEffect = shouldUseSettingsFrom.selectedTemplate
+                viewModel.selectedImage = shouldUseSettingsFrom.sourceImage
+                if let _ = shouldUseSettingsFrom.sourceImage {
+                    viewModel.isImageToVideo = true
+                } else {
+                    viewModel.isImageToVideo = false
+                }
                 mainViewModel.shouldUseSettingsFrom = nil
             }
         }
         .onChange(of: mainViewModel.shouldUseSettingsFrom) { _, newValue in
             guard let value = newValue else { return }
-            
             viewModel.duration = Duration(raw: value.duration)
             viewModel.quality = Quality(raw: value.resolution)
             viewModel.promt = value.text
             viewModel.selectedEffect = value.selectedTemplate
+            viewModel.selectedImage = value.sourceImage
             
+            if let _ = value.sourceImage {
+                viewModel.isImageToVideo = true
+            } else {
+                viewModel.isImageToVideo = false
+            }
             mainViewModel.shouldUseSettingsFrom = nil
+        }
+        .alert(permissionService.alertType.alertTitle, isPresented: $permissionService.showAlert) {
+            
+            Button("Cancel") { }
+            
+            Button(action: {
+                guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else { return }
+                openURL(settingsUrl)
+
+            }) {
+                Text("Settings")
+                    .fontWeight(.bold)
+            }
+            .keyboardShortcut(.defaultAction)
+        } message: {
+            Text(permissionService.alertType.alertMessage)
         }
     }
     
@@ -182,21 +212,33 @@ struct VideoCreationView: View {
     }
     
     private var content: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                if viewModel.isImageToVideo {
-                    imagePicker
+        ScrollViewReader { proxy in
+            ScrollView {
+                VStack(spacing: 16) {
+                    if viewModel.isImageToVideo {
+                        imagePicker
+                    }
+                    effectsButton
+                    promtInput
+                    videoSettings
+                    generateButton
+                        .padding(.bottom, 64)
+                    Color.clear
+                        .frame(height: 1)
+                        .id("top")
                 }
-                effectsButton
-                promtInput
-                videoSettings
-                generateButton
+                .padding(.horizontal, 16)
+                .padding(.top, 104)
             }
-            .padding(.horizontal, 16)
-            .padding(.bottom, 64)
-            .padding(.top, 104)
+            .scrollIndicators(.hidden)
+            .onChange(of: isPromptFocused) {
+                if isPromptFocused {
+                    withAnimation {
+                        proxy.scrollTo("top")
+                    }
+                }
+            }
         }
-        .scrollIndicators(.hidden)
     }
     
     private var imagePicker: some View {
@@ -377,11 +419,16 @@ struct VideoCreationView: View {
     }
     
     private var generateButton: some View {
+        
         Button {
-            if generationLimitManager.canAfford(price: viewModel.price) {
+            if generationLimitManager.canAfford(price: viewModel.price) && viewModel.promt.count <= 2000 {
                 generationLimitManager.consumeGenerations(
                     amount: viewModel.price,
                     isSubscribed: purchaseManager.isSubscribed)
+                if purchaseManager.isSubscribed, !hasGeneratedAfterSubscription {
+                    mainViewModel.showFeedbackAlert = true
+                    hasGeneratedAfterSubscription = true
+                }
                 viewModel.generate()
             } else if !generationLimitManager.canAfford(price: viewModel.price) && purchaseManager
                 .isSubscribed
@@ -395,7 +442,7 @@ struct VideoCreationView: View {
                 purchaseManager.isShowedPaywall = true
             }
         } label: {
-            let canGenerate = viewModel.canGenerate
+            let canGenerate = viewModel.canGenerate && viewModel.promt.count <= 2000
             Group {
                 HStack(spacing: 8) {
                     Text("Create Video")
@@ -426,7 +473,7 @@ struct VideoCreationView: View {
             .contentShape(RoundedRectangle(cornerRadius: 8))
             .padding(.top, 16)
         }
-        .disabled(!viewModel.canGenerate)
+        .disabled(!viewModel.canGenerate || viewModel.promt.count >= 2000)
     }
     
     @ViewBuilder

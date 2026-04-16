@@ -10,6 +10,7 @@ final class MainViewModel: ObservableObject {
     @Published var results: [LibraryItem] = []
     @Published var isDeletePartPresented: Bool = false
     @Published var shouldUseSettingsFrom: LibraryItem? = nil
+    @Published var showFeedbackAlert = false
 
     private var deletePartDismissWorkItem: DispatchWorkItem?
     private var latestImagesTask: Task<Void, Never>?
@@ -51,6 +52,7 @@ final class MainViewModel: ObservableObject {
         generatedVideo.generationMode = generationMode
         generatedVideo.selectedTemplateId = selectedTemplateId
         generatedVideo.createdAt = Date()
+        generatedVideo.sourceImageData = sourceImage?.jpegData(compressionQuality: 1)
         
         guard context.hasChanges else { return nil}
         do {

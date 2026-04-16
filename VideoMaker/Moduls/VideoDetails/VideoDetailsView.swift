@@ -7,6 +7,7 @@ import Lottie
 struct VideoDetailsView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.managedObjectContext) var context
+    @Environment(\.openURL) private var openURL
     @StateObject private var viewModel: VideoDetailsViewModel
     @State private var showActionsMenu = false
     @State private var shareItem: ShareItem?
@@ -14,12 +15,10 @@ struct VideoDetailsView: View {
     @EnvironmentObject private var mainTabViewModel: MainTabViewModel
     @EnvironmentObject private var generationLimitManager: GenerationLimitManager
     @EnvironmentObject var mainViewModel: MainViewModel
-    @AppStorage("hasGeneratedAfterSubscription") private var hasGeneratedAfterSubscription: Bool = false
 
     @State private var showNotEnough = false
     @State private var showAllUsed = false
     @State private var showDeleteAlert = false
-    @State private var showFeedbackAlert = false
     @State private var showGoToStoreAlert = false
 
     init(libraryItem: LibraryItem) {
@@ -47,7 +46,7 @@ struct VideoDetailsView: View {
             }
             .presentationDetents([.medium, .large])
         }
-        .alert("Do You Like The App?", isPresented: $showFeedbackAlert) {
+        .alert("Do You Like The App?", isPresented: $mainViewModel.showFeedbackAlert) {
             Button("No") {}
             Button("Yes") {
                 showGoToStoreAlert = true
@@ -58,7 +57,7 @@ struct VideoDetailsView: View {
         .alert("Please Leave a Review", isPresented: $showGoToStoreAlert) {
             Button("Go to the App Store", role: .cancel) {
                 guard let url = URL(string: AppConfig.Links.review) else { return }
-                UIApplication.shared.open(url)
+                openURL(url)
             }
         } message: {
             Text("Positive reviews are a powerful motivation for us to excel")
@@ -86,12 +85,6 @@ struct VideoDetailsView: View {
             if let isSuccessSeved = viewModel.isSuccessSeved {
                 makeToastView(isSuccess: isSuccessSeved)
                     .padding(.top, 9)
-            }
-        }
-        .onAppear {
-            if purchaseManager.isSubscribed, !hasGeneratedAfterSubscription {
-                showFeedbackAlert = true
-                hasGeneratedAfterSubscription = true
             }
         }
     }

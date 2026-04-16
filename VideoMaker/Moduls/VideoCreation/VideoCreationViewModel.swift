@@ -45,6 +45,7 @@ final class VideoCreationViewModel: ObservableObject {
     }
 
     func generate() {
+        generatedVideo = nil
         progressState = .preparing
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
             guard self?.progressState == .preparing else { return }
