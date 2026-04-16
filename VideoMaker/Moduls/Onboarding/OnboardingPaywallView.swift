@@ -6,7 +6,8 @@ import ApphudBase
 struct OnboardingPaywallView: View {
     @EnvironmentObject private var purchaseManager: PurchaseManager
     @Environment(\.openURL) private var openURL
-    @State private var isTrialEnabled = false
+    
+    @State private var isTrialEnabled = true
     @State private var isLoading = false
     
     var prod: ApphudProduct {

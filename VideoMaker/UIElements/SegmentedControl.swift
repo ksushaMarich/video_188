@@ -38,7 +38,7 @@ struct SegmentedControl: View {
             action()
         } label: {
             Text(title)
-                .font(.system(size: 15, weight: .bold))
+                .font(CabinetGroteskFont.medium.of(size: 15))
                 .foregroundColor(.introSubtitle)
                 .frame(maxWidth: .infinity)
                 .padding(10)
