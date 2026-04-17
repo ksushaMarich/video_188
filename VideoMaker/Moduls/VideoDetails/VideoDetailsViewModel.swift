@@ -1,6 +1,6 @@
 import AVFoundation
 import Photos
-public import CoreData
+import CoreData
 import Foundation
 import UIKit
 import Combine

@@ -11,7 +11,6 @@ final class PurchaseManager: ObservableObject {
 
     @Published private(set) var trialProduct: ApphudProduct!
     @Published private(set) var nonTrialProduct: ApphudProduct!
-    @Published private(set) var lifetimeProduct: ApphudProduct!
     @Published private(set) var isSubscribed = false
     @Published private(set) var products: [ApphudProduct]!
     @Published var isShowedPaywall = false
@@ -38,7 +37,6 @@ final class PurchaseManager: ObservableObject {
         self.paywall = paywall
         nonTrialProduct = paywall.products.first(where: { !$0.isTrial })
         trialProduct = paywall.products.first(where: { $0.isTrial })
-        lifetimeProduct = paywall.products.first(where: { $0.isLifetime })
         products = paywall.products
     }
     
