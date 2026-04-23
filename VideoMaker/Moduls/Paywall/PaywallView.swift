@@ -54,7 +54,7 @@ struct PaywallView: View {
 
     @ViewBuilder
     private var contentPanel: some View {
-        VStack(alignment: .center, spacing: 24) {
+        VStack(alignment: .center, spacing: 0) {
                 VStack(spacing: 12) {
                     Text("Full Power With\nPremium Features")
                         .font(CabinetGroteskFont.extrabold.of(size: 40))
@@ -71,24 +71,38 @@ struct PaywallView: View {
                         )
                         .fixedSize(horizontal: false, vertical: true)
                         
-                    Text("Share, download, and create more\n with a premium subscription")
-                        .font(CabinetGroteskFont.medium.of(size: 20))
-                        .multilineTextAlignment(.center)
-                        .foregroundStyle(.introSubtitle)
-                        .fixedSize(horizontal: false, vertical: true)
-                    
+                    VStack(spacing: 0) {
+                        Text("Share, download, and create more\nwith a premium subscription")
+                            .font(CabinetGroteskFont.medium.of(size: 20))
+                            .multilineTextAlignment(.center)
+                            .foregroundStyle(.introSubtitle)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Button {
+                            DispatchQueue.main.async {
+                                dismiss()
+                            }
+                        } label: {
+                            Text("or proceed with limits")
+                                .foregroundColor(.introSubtitle)
+                                .font(CabinetGroteskFont.medium.of(size: 20))
+                                .contentShape(Rectangle())
+                        }
+                        .disabled(isLoading)
+                    }
                     
                 }
             
                 SegmentedControl(isTrial: $isTrialEnabled)
+                .padding(.top, 20)
             
-                VStack(spacing: 32) {
-                    subscriptionText()
-                    
-                    ContinueButton(isDisabled: $isLoading) {
-                        startPurchase()
-                    }
+            VStack(spacing: 32) {
+                subscriptionText()
+                
+                ContinueButton(isDisabled: $isLoading) {
+                    startPurchase()
+                }
             }
+            .padding(.top, 20)
 
             TermsPrivacyRestoreFooter {
                 isLoading = true
@@ -101,6 +115,7 @@ struct PaywallView: View {
                     }
                 }
             }
+            .padding(.top, 16)
         }
         .padding(.horizontal, 24)
         .padding(.bottom, 34)
@@ -110,22 +125,23 @@ struct PaywallView: View {
 
     @ViewBuilder
     private func subscriptionText() -> some View {
-
-        VStack(alignment: .center, spacing: 0) {
-            Text(isTrialEnabled ? "Subscribe to unlock all the features\nfor just \(purchaseManager.trialProduct.fullPrice)" : "Subscribe to unlock all the\nfeatures for just \(purchaseManager.nonTrialProduct.fullPrice)")
+        VStack(alignment: .center, spacing: 8) {
+            Text("\(prod.fullPrice)")
+                .font(CabinetGroteskFont.medium.of(size: 20))
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [
+                            Color.introAccentSecondary,
+                            Color.introAccentPrimary
+                        ],
+                        startPoint: .bottomLeading,
+                        endPoint: .topTrailing
+                    )
+                )
+            
+            Text("Auto-renewable subscription,\ncancel anytime")
                 .foregroundColor(.introSubtitle)
                 .font(CabinetGroteskFont.regular.of(size: 17))
-            Button {
-                DispatchQueue.main.async {
-                    dismiss()
-                }
-            } label: {
-                Text("or proceed with limits")
-                    .foregroundColor(.introSubtitle)
-                    .font(CabinetGroteskFont.regular.of(size: 17))
-                    .contentShape(Rectangle())
-            }
-            .disabled(isLoading)
         }
         .multilineTextAlignment(.center)
         .fixedSize(horizontal: false, vertical: true)
@@ -146,5 +162,16 @@ struct PaywallView: View {
                 }
             }
         }
+    }
+}
+
+#Preview {
+    @Previewable @StateObject var purchaseManager = PurchaseManager.shared
+    
+    if purchaseManager.paywall == nil || purchaseManager.nonTrialProduct == nil || purchaseManager.trialProduct == nil {
+        Spacer()
+    } else {
+        PaywallView()
+            .environmentObject(purchaseManager)
     }
 }

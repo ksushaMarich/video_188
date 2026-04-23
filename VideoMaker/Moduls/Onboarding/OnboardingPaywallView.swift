@@ -53,9 +53,9 @@ struct OnboardingPaywallView: View {
 
     @ViewBuilder
     private var contentPanel: some View {
-        VStack(alignment: .center, spacing: 24) {
+        VStack(alignment: .center, spacing: 16) {
             VStack(alignment: .center, spacing: 20) {
-                VStack(spacing: 16) {
+                VStack(spacing: 12) {
                     Text("Full Power With\nPremium Features")
                         .font(CabinetGroteskFont.extrabold.of(size: 40))
                         .multilineTextAlignment(.center)
@@ -71,16 +71,27 @@ struct OnboardingPaywallView: View {
                         )
                         .fixedSize(horizontal: false, vertical: true)
                         
-                    Text("Share, download, and create more\n with a premium subscription")
-                        .font(CabinetGroteskFont.medium.of(size: 20))
-                        .multilineTextAlignment(.center)
-                        .foregroundStyle(.introSubtitle)
-                        .fixedSize(horizontal: false, vertical: true)
-                    
-                    SegmentedControl(isTrial: $isTrialEnabled)
+                    VStack(spacing: 0) {
+                        Text("Share, download, and create more\nwith a premium subscription")
+                            .font(CabinetGroteskFont.medium.of(size: 20))
+                            .multilineTextAlignment(.center)
+                            .foregroundStyle(.introSubtitle)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Button {
+                            purchaseManager.hasSeenOnBoarding = true
+                        } label: {
+                            Text("or proceed with limits")
+                                .foregroundColor(.introSubtitle)
+                                .font(CabinetGroteskFont.medium.of(size: 20))
+                                .contentShape(Rectangle())
+                        }
+                        .disabled(isLoading)
+                    }
                 }
 
-                VStack(spacing: 24) {
+                SegmentedControl(isTrial: $isTrialEnabled)
+                
+                VStack(spacing: 32) {
                     subscriptionText()
                     
                     ContinueButton(isDisabled: $isLoading) {
@@ -106,27 +117,25 @@ struct OnboardingPaywallView: View {
 
     @ViewBuilder
     private func subscriptionText() -> some View {
-        let price = isTrialEnabled
-            ? purchaseManager.trialProduct.fullPrice
-            : purchaseManager.nonTrialProduct.fullPrice
-
-        VStack(spacing: 0) {
-            Text(isTrialEnabled ? "Subscribe to unlock all the features\nfor just \(price)" : "Subscribe to unlock all the\nfeatures for just \(price)")
+        VStack(alignment: .center, spacing: 8) {
+            Text("\(prod.fullPrice)")
+                .font(CabinetGroteskFont.medium.of(size: 20))
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [
+                            Color.introAccentSecondary,
+                            Color.introAccentPrimary
+                        ],
+                        startPoint: .bottomLeading,
+                        endPoint: .topTrailing
+                    )
+                )
+            
+            Text("Auto-renewable subscription,\ncancel anytime")
                 .foregroundColor(.introSubtitle)
                 .font(CabinetGroteskFont.regular.of(size: 17))
-
-            Button {
-                purchaseManager.hasSeenOnBoarding = true
-            } label: {
-                Text("or proceed with limits")
-                    .foregroundColor(.introSubtitle)
-                    .font(CabinetGroteskFont.regular.of(size: 17))
-                    .contentShape(Rectangle())
-            }
-            .disabled(isLoading)
         }
         .multilineTextAlignment(.center)
-        .frame(maxWidth: .infinity)
         .fixedSize(horizontal: false, vertical: true)
     }
 
