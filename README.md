@@ -1,12 +1,13 @@
 # VideoMaker 🎬
 
----
+<p align="center">
+  <img src="FIRST_SCREEN" width="250"/>
+</p>
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/7f45d54b-b2a2-4261-8ad2-9eb6ddda5f65" width="220"/>
-  <img src="https://github.com/user-attachments/assets/f1da01d3-b12e-47f7-912f-6cd4f9cbceaa" width="220"/>
-  <img src="https://github.com/user-attachments/assets/ec8f06e4-c8bb-4e98-b89f-0b6760ea7528" width="220"/>
-  <img src="https://github.com/user-attachments/assets/660d4ccc-e90c-43ef-8c4e-d7fb2d888363" width="220"/>
+  <img src="SECOND_SCREEN" width="170"/>
+  <img src="THIRD_SCREEN" width="170"/>
+  <img src="FOURTH_SCREEN" width="170"/>
 </p>
 
 ## Описание 📜
