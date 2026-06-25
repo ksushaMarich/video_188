@@ -1,13 +1,15 @@
 # VideoMaker 🎬
 
+---
+
 <p align="center">
-  <img src="FIRST_SCREEN" width="250"/>
+  <img src="1" width="190"/>
+  <img src="2" width="190"/>
 </p>
 
 <p align="center">
-  <img src="SECOND_SCREEN" width="170"/>
-  <img src="THIRD_SCREEN" width="170"/>
-  <img src="FOURTH_SCREEN" width="170"/>
+  <img src="3" width="190"/>
+  <img src="4" width="190"/>
 </p>
 
 ## Описание 📜
