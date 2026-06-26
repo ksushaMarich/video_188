@@ -1,16 +1,22 @@
 # VideoMaker 🎬
 
----
+<table align="center">
+  <tr>
+    <td>
+      <img src="https://github.com/user-attachments/assets/5ca10c33-f4f3-43f3-96cf-2523c5c475b9" width="190">
+    </td>
+    <td>
+      <img src="https://github.com/user-attachments/assets/08f3cc2f-b8fe-4150-990d-aaf7511ee21b" width="190">
+    </td>
+    <td>
+      <img src="https://github.com/user-attachments/assets/500d33ca-aa84-48e4-bffb-20b963d5130b" width="190">
+    </td>
+    <td>
+      <img src="https://github.com/user-attachments/assets/c02a6964-510f-4744-b980-e91f177d038c" width="190">
+    </td>
+  </tr>
+</table>
 
-<p align="center">
-  <img src="1" width="190"/>
-  <img src="2" width="190"/>
-</p>
-
-<p align="center">
-  <img src="3" width="190"/>
-  <img src="4" width="190"/>
-</p>
 
 ## Описание 📜
 
